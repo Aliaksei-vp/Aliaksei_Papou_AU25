@@ -9,7 +9,7 @@ INNER JOIN public.film_category fil_cat
 	ON fil.film_id = fil_cat.film_id
 INNER JOIN public.category cat
 	ON fil_cat.category_id = cat.category_id
-WHERE cat.name = 'Animation' 
+WHERE LOWER (cat.name) =  LOWER ('Animation') 
 	AND fil.release_year 
 	BETWEEN 2017 AND 2019
 	AND fil.rental_rate > 1
@@ -27,7 +27,7 @@ WHERE fil.film_id IN (
 WHERE fil_cat.category_id IN (
 		SELECT cat.category_id 
 		FROM public.category cat
-		WHERE cat.name = 'Animation'
+		WHERE LOWER (cat.name) =  LOWER ('Animation') 
 )) 
 AND fil.release_year BETWEEN 2017 AND 2019
 AND fil.rental_rate >1
@@ -42,7 +42,7 @@ WITH Film_Category_CTE AS (
 	ON fil.film_id = fil_cat.film_id
     INNER JOIN public.category cat 
 	ON fil_cat.category_id = cat.category_id
-    WHERE cat.name = 'Animation'
+    WHERE LOWER (cat.name) =  LOWER ('Animation') 
 )
 SELECT title, release_year, rental_rate
 FROM Film_Category_CTE
@@ -58,7 +58,7 @@ Reason: The query is straightforward, with simple filters and direct relationsh
 
 --JOIN
 SELECT
-    	CONCAT(ad.address, ', ', ad.address2) AS store_address,
+    	CONCAT_WS (', ', ad.address, ad.address2) AS store_address,
     	SUM(pay.amount) AS revenue
 FROM public.payment pay
 INNER JOIN public.rental ren 
@@ -69,7 +69,7 @@ INNER JOIN public.store st
 	ON inv.store_id = st.store_id
 INNER JOIN public.address ad 
 	ON st.address_id = ad.address_id
-WHERE pay.payment_date >= '2017-04-01'
+WHERE CAST(payment_date AS DATE) >= '2017-04-01'::date
 GROUP BY store_address;
 
 
@@ -78,7 +78,7 @@ SELECT store_address,
        SUM(amount) AS revenue
 FROM (
     SELECT pay.amount,
-           CONCAT(ad.address, ', ', ad.address2) AS store_address,
+           CONCAT_WS (', ', ad.address, ad.address2) AS store_address,
            pay.payment_date
     FROM public.payment pay
     INNER JOIN public.rental ren 
@@ -90,14 +90,14 @@ FROM (
     INNER JOIN public.address ad 
 	ON st.address_id = ad.address_id
 ) AS Store_Payments
-WHERE payment_date >= '2017-04-01'
-GROUP BY store_address;
+WHERE CAST(payment_date AS DATE) >= '2017-04-01'::date
+GROUP BY store_address;	
 
 
 --CTE
 WITH Store_Payments AS (
     SELECT pay.amount,
-           CONCAT(ad.address, ', ', ad.address2) AS store_address,
+           CONCAT_WS (', ', ad.address, ad.address2) AS store_address,
 		   pay.payment_date
     FROM public.payment pay
     INNER JOIN public.rental ren 
@@ -112,7 +112,7 @@ WITH Store_Payments AS (
 SELECT store_address,
        SUM(amount) AS revenue
 FROM Store_Payments
-WHERE payment_date >= '2017-04-01'
+WHERE CAST(payment_date AS DATE) >= '2017-04-01'::date
 GROUP BY store_address;
 
 /*Best Approach: Join - Straightforward aggregation; efficient and readable;
@@ -130,7 +130,7 @@ INNER JOIN public.film_actor fil_act
 	ON act.actor_id = fil_act.actor_id
 INNER JOIN public.film fil
 	ON fil_act.film_id = fil.film_id
-WHERE fil.release_year > 2015
+WHERE fil.release_year >= 2015
 GROUP BY act.actor_id
 ORDER BY number_of_movies DESC
 LIMIT 5;
@@ -150,7 +150,7 @@ FROM (
 	ON act.actor_id = fil_act.actor_id
     INNER JOIN public.film fil 
 	ON fil_act.film_id = fil.film_id
-    WHERE fil.release_year > 2015
+    WHERE fil.release_year >= 2015
 ) AS ActorMovies
 GROUP BY actor_id, first_name, last_name
 ORDER BY number_of_movies DESC
@@ -168,7 +168,7 @@ WITH Actor_Movies AS (
 	ON act.actor_id = fil_act.actor_id
     INNER JOIN public.film fil 
 	ON fil_act.film_id = fil.film_id
-    WHERE fil.release_year > 2015
+    WHERE fil.release_year >= 2015
 )
 SELECT first_name, 
 	   last_name, 
@@ -323,7 +323,7 @@ INNER JOIN public.inventory inv
 INNER JOIN film fil
 	ON inv.film_id = fil.film_id
 GROUP BY fil.film_id
-ORDER BY rentals DESC, fil.title
+ORDER BY rentals DESC
 LIMIT 5;
 
 
@@ -350,7 +350,7 @@ FROM (
 	ON inv.film_id = fil.film_id
 ) AS Film_Rentals
 GROUP BY film_id, title, rating
-ORDER BY rentals DESC, title
+ORDER BY rentals DESC
 LIMIT 5;
 
 
@@ -378,7 +378,7 @@ SELECT title,
     COUNT(rental_id) AS rentals
 FROM Film_Rentals
 GROUP BY film_id, title, rating
-ORDER BY rentals DESC, title
+ORDER BY rentals DESC
 LIMIT 5;
 
 /*Best Approach: Join - Aggregation and CASE; join is optimal;
@@ -388,39 +388,45 @@ Reason: The query uses aggregation and a simple CASE statement. Join is optimal
 --Task 3.1:Show gap between the latest release_year and current year per each actor
 
 --JOIN
-SELECT act.first_name,
-  	   act.last_name,
-  	   MAX(fil.release_year) AS latest_release_year,
-       (2025 - MAX(fil.release_year)) AS years_of_inactivity
-FROM public.actor act
-JOIN public.film_actor fil_act
-  ON act.actor_id = fil_act.actor_id
-JOIN public.film fil
-  ON fil_act.film_id = fil.film_id
+SELECT
+    act.first_name,
+    act.last_name,
+    COUNT(fil.film_id) AS film_count, 
+    MAX(fil.release_year) AS latest_release_year,
+    (EXTRACT (YEAR FROM CURRENT_DATE) - MAX(fil.release_year)) AS years_of_inactivity
+FROM
+    public.actor act
+JOIN
+    public.film_actor fil_act ON act.actor_id = fil_act.actor_id
+JOIN
+    public.film fil ON fil_act.film_id = fil.film_id
 GROUP BY
-  act.actor_id,
-  act.first_name,
-  act.last_name
-ORDER BY years_of_inactivity DESC;
+    act.actor_id, act.first_name, act.last_name
+HAVING COUNT(fil.film_id) >= 7
+ORDER BY
+    years_of_inactivity DESC;
 
 
 --Subquery
 SELECT first_name,
        last_name,
-       MAX(release_year) AS latest_release_year,
-       (2025 - MAX(release_year)) AS years_of_inactivity
+	   film_count,	   
+       latest_release_year,
+       EXTRACT (YEAR FROM CURRENT_DATE) - latest_release_year AS years_of_inactivity
 FROM (
     SELECT act.actor_id, 
 		   act.first_name, 
-		   act.last_name, 
-		   fil.release_year
-    FROM public.actor act
+		   act.last_name,
+		   COUNT(fil.film_id) AS film_count,
+		   MAX(release_year) AS latest_release_year
+		   FROM public.actor act
     JOIN public.film_actor fil_act 
 	ON act.actor_id = fil_act.actor_id
     JOIN public.film fil 
 	ON fil_act.film_id = fil.film_id
+	GROUP BY act.actor_id, act.first_name, act.last_name
+HAVING COUNT(fil.film_id) >= 7 
 ) AS Actor_Films
-GROUP BY actor_id, first_name, last_name
 ORDER BY years_of_inactivity DESC;
 
 
@@ -429,19 +435,22 @@ WITH Actor_Films AS (
     SELECT act.actor_id, 
 		   act.first_name, 
 		   act.last_name, 
-		   fil.release_year
+		   COUNT(fil.film_id) AS film_count,
+		   MAX(release_year) AS latest_release_year
     FROM public.actor act
     JOIN public.film_actor fil_act 
 	ON act.actor_id = fil_act.actor_id
     JOIN public.film fil 
 	ON fil_act.film_id = fil.film_id
+	GROUP BY act.actor_id, act.first_name, act.last_name
+	HAVING COUNT(fil.film_id) >= 7
 )
 SELECT first_name,
        last_name,
-       MAX(release_year) AS latest_release_year,
-       (2025 - MAX(release_year)) AS years_of_inactivity
+	   film_count,
+       latest_release_year,
+       EXTRACT (YEAR FROM CURRENT_DATE) - latest_release_year AS years_of_inactivity
 FROM Actor_Films
-GROUP BY actor_id, first_name, last_name
 ORDER BY years_of_inactivity DESC;
 
 /*Best Approach: Join - Aggregation and calculation; join is efficient;
@@ -451,83 +460,80 @@ Reason: Aggregation (MAX) and calculation are straightforward. Join is efficien
 --Task 3.2:Show gaps between sequential films per each actor
 
 --JOIN
-SELECT
-    act.first_name,
-    act.last_name,
-    MAX(fil2.release_year - fil1.release_year) AS longest_gap_years
+SELECT act.first_name,
+       act.last_name,
+       MAX(fil2.release_year - fil1.release_year) AS longest_gap_years
 FROM public.actor act
+INNER JOIN (SELECT actor_id FROM public.film_actor
+    		GROUP BY actor_id
+    		HAVING COUNT(film_id) >= 7) 
+AS Notable_Actors_List ON act.actor_id = Notable_Actors_List.actor_id
 INNER JOIN public.film_actor fil_act1 
 	ON act.actor_id = fil_act1.actor_id
-INNER JOIN public.film fil1 	
+INNER JOIN public.film fil1 
 	ON fil_act1.film_id = fil1.film_id
-LEFT JOIN public.film  fil2 
-ON fil2.film_id = (
-        SELECT fil_next.film_id
-        FROM public.film_actor fil_act_next
-        JOIN public.film fil_next 
-		ON fil_act_next.film_id = fil_next.film_id
+LEFT JOIN public.film fil2 
+	ON fil2.film_id = (SELECT fil_next.film_id FROM public.film_actor fil_act_next
+        JOIN public.film fil_next ON fil_act_next.film_id = fil_next.film_id
         WHERE fil_act_next.actor_id = act.actor_id
         AND fil_next.release_year > fil1.release_year
         ORDER BY fil_next.release_year
-        LIMIT 1
-    )
-GROUP BY act.first_name, act.last_name
+        LIMIT 1)
+GROUP BY act.actor_id, act.first_name, act.last_name
 ORDER BY longest_gap_years DESC;
 
 
 --Subquery
-SELECT first_name,
-	   last_name,
-	   MAX(next_year - year1) AS longest_gap_years
-FROM (
-    SELECT act.actor_id,
-    	   act.first_name,
-           act.last_name,
-           fil1.release_year AS year1,
-        (
-            SELECT MIN(fil2.release_year)
-            FROM public.film_actor fil_act2
-            JOIN public.film fil2 
-            ON fil_act2.film_id = fil2.film_id
-            WHERE fil_act2.actor_id = act.actor_id
-            AND fil2.release_year > fil1.release_year
-        ) AS next_year
-    FROM public.actor act
-    JOIN public.film_actor fil_act1 
-    ON act.actor_id = fil_act1.actor_id
-    JOIN public.film fil1 
-    ON fil_act1.film_id = fil1.film_id
-) AS Actor_Films
-WHERE next_year IS NOT NULL
-GROUP BY first_name, last_name
+SELECT act.first_name,
+       act.last_name,
+       MAX(fil2.release_year - fil1.release_year) AS longest_gap_years
+FROM public.actor act
+INNER JOIN public.film_actor fil_act1 
+	ON act.actor_id = fil_act1.actor_id
+INNER JOIN public.film fil1 
+	ON fil_act1.film_id = fil1.film_id
+LEFT JOIN public.film fil2 
+	ON fil2.film_id = (SELECT fil_next.film_id FROM public.film_actor fil_act_next
+    JOIN public.film fil_next 
+		ON fil_act_next.film_id = fil_next.film_id
+    WHERE fil_act_next.actor_id = act.actor_id
+    AND fil_next.release_year > fil1.release_year
+    ORDER BY fil_next.release_year
+    LIMIT 1)
+WHERE EXISTS (SELECT 1 FROM public.film_actor fa_count
+    		  WHERE fa_count.actor_id = act.actor_id
+   		  GROUP BY fa_count.actor_id
+    		  HAVING COUNT(fa_count.film_id) >= 7)
+GROUP BY act.actor_id, act.first_name, act.last_name
 ORDER BY longest_gap_years DESC;
 
 
+
 --CTE
-WITH Actor_Films AS (
-    SELECT act.actor_id,
-           act.first_name,
-           act.last_name,
-           fil1.release_year AS year1, 
-		   (
-            SELECT MIN(fil2.release_year)
-            FROM film_actor fil_act2
-            JOIN film fil2 ON fil_act2.film_id = fil2.film_id
-            WHERE fil_act2.actor_id = act.actor_id
-            AND fil2.release_year > fil1.release_year
-        ) AS next_year
-    FROM public.actor act
-    JOIN public.film_actor fil_act1 
-	ON act.actor_id = fil_act1.actor_id
-    JOIN public.film fil1 
-	ON fil_act1.film_id = fil1.film_id
-)
-SELECT first_name,
-       last_name,
-       MAX(next_year - year1) AS longest_gap_years
-FROM Actor_Films
-WHERE next_year IS NOT NULL
-GROUP BY first_name, last_name
+WITH Notable_Actors AS (SELECT act.actor_id FROM public.actor act
+    			JOIN public.film_actor fil_act 
+			   ON act.actor_id = fil_act.actor_id
+   			GROUP BY act.actor_id
+   			HAVING COUNT(fil_act.film_id) >= 7),
+Actor_Gaps AS (SELECT na.actor_id, fil1.release_year AS current_film_year,
+       		     (SELECT MIN(fil_next.release_year)
+           	      FROM public.film_actor fil_act_next
+           	      JOIN public.film fil_next 
+			   ON fil_act_next.film_id = fil_next.film_id
+           	      WHERE fil_act_next.actor_id = na.actor_id
+              	      AND fil_next.release_year > fil1.release_year) AS next_film_year
+   		      FROM Notable_Actors na
+                      JOIN public.film_actor fil_act1 
+			   ON na.actor_id = fil_act1.actor_id
+   		      JOIN public.film fil1 
+			   ON fil_act1.film_id = fil1.film_id)
+SELECT act.first_name,
+       act.last_name,
+       MAX(ag.next_film_year - ag.current_film_year) AS longest_gap_years
+FROM Actor_Gaps ag
+JOIN public.actor act 
+ON ag.actor_id = act.actor_id
+GROUP BY act.actor_id, act.first_name, act.last_name
 ORDER BY longest_gap_years DESC;
 
 /*Best Approach: CTE
