@@ -13,7 +13,7 @@ SELECT 'HACHIKO: A DOG’S TALE' AS title,
 	   4.99 AS rental_rate, 
 	   136 AS length, 
 	   19.99 AS replacement_cost, 
-	   CURRENT_DATE AS last_update
+	   CURRENT_TIMESTAMP AS last_update
 UNION ALL
 SELECT 'WHAT WOMEN WANT' AS title,
 	   'He has the power to hear everything women are thinking. Finally... a man is listening' AS description, 
@@ -23,7 +23,7 @@ SELECT 'WHAT WOMEN WANT' AS title,
 	   9.99 AS rental_rate, 
 	   154 AS length, 
 	   19.99 AS replacement_cost, 
-	   CURRENT_DATE AS last_update
+	   CURRENT_TIMESTAMP AS last_update
 UNION ALL
 SELECT 'F1' AS title,
 	   'Racing driver Sonny Hayes, who returns after a 30-year absence to save his former teammate underdog team, APXGP, from collapse' AS description, 
@@ -33,11 +33,11 @@ SELECT 'F1' AS title,
 	   19.99 AS rental_rate, 
 	   148 AS length, 
 	   19.99 AS replacement_cost, 
-	   CURRENT_DATE AS last_update)
+	   CURRENT_TIMESTAMP AS last_update)
 	   AS new_film
 WHERE NOT EXISTS (
 	SELECT 1 FROM public.film AS pf 
-	WHERE pf.title = new_film.title)
+	WHERE UPPER (pf.title) = UPPER (new_film.title))
 RETURNING film_id, title;
 COMMIT;
 
@@ -48,24 +48,24 @@ COMMIT;
 BEGIN;
 INSERT INTO public.actor (first_name, last_name, last_update)
 SELECT * FROM 
-	(SELECT 'RICHARD' AS first_name, 'GERE' AS last_name, CURRENT_DATE AS last_update
+	(SELECT 'RICHARD' AS first_name, 'GERE' AS last_name, CURRENT_TIMESTAMP AS last_update
 	 UNION ALL
-	 SELECT 'JOAN', 'ALLEN', CURRENT_DATE
+	 SELECT 'JOAN', 'ALLEN', CURRENT_TIMESTAMP
 	 UNION ALL
-	 SELECT 'MEL', 'GIBSON', CURRENT_DATE
+	 SELECT 'MEL', 'GIBSON', CURRENT_TIMESTAMP
 	 UNION ALL
-	 SELECT 'HELEN', 'HUNT', CURRENT_DATE
+	 SELECT 'HELEN', 'HUNT', CURRENT_TIMESTAMP
 	 UNION ALL
-	 SELECT 'BRAD', 'PITT', CURRENT_DATE
+	 SELECT 'BRAD', 'PITT', CURRENT_TIMESTAMP
 	 UNION ALL
-	 SELECT 'DAMSON', 'IDRIS', CURRENT_DATE
+	 SELECT 'DAMSON', 'IDRIS', CURRENT_TIMESTAMP
 	 UNION ALL
-	 SELECT 'TOBIAS', 'MENZIES', CURRENT_DATE)
+	 SELECT 'TOBIAS', 'MENZIES', CURRENT_TIMESTAMP)
 	 AS new_actor
 WHERE NOT EXISTS (
 	SELECT * FROM public.actor AS pa 
-	WHERE pa.first_name = new_actor.first_name 
-	and pa.last_name = new_actor.last_name)
+	WHERE UPPER (pa.first_name) = UPPER (new_actor.first_name) 
+	AND UPPER (pa.last_name) = UPPER (new_actor.last_name))
 RETURNING actor_id, first_name, last_name;
 COMMIT;
 
@@ -78,7 +78,7 @@ INSERT INTO public.film_actor (actor_id, film_id, last_update)
 SELECT
     actor_id,
     film_id,
-    CURRENT_DATE
+    CURRENT_TIMESTAMP
 FROM public.actor, public.film
 WHERE
     (actor.first_name = 'RICHARD' AND actor.last_name = 'GERE' AND film.title = 'HACHIKO: A DOG’S TALE') OR
@@ -97,14 +97,17 @@ COMMIT;
 --Using WHERE NOT EXISTS to avoid duplicates, and RETURNING to get new inventory_id
 
 BEGIN;
+WITH current_store AS (SELECT store_id FROM public.store 
+    		       WHERE address_id = 1)
 INSERT INTO public.inventory (film_id, store_id, last_update)
-SELECT film.film_id, 1, current_date
+SELECT film.film_id, c_store.store_id, CURRENT_TIMESTAMP
 FROM public.film
-WHERE film.title IN ('HACHIKO: A DOG’S TALE', 'WHAT WOMEN WANT', 'F1')
+CROSS JOIN current_store c_store
+WHERE UPPER (film.title) IN ('HACHIKO: A DOG’S TALE', 'WHAT WOMEN WANT', 'F1')
 AND NOT EXISTS (
     SELECT 1 FROM public.inventory inv
-    WHERE inv.film_id = film.film_id AND inv.store_id = 1
-)
+    WHERE inv.film_id = film.film_id 
+    AND inv.store_id = c_store.store_id)
 RETURNING inventory_id, film_id, store_id;
 COMMIT;
 
@@ -118,17 +121,21 @@ WITH customer_change AS (SELECT cus.customer_id
         INNER JOIN public.payment pay ON cus.customer_id = pay.customer_id
         GROUP BY cus.customer_id
         HAVING COUNT(ren.rental_id) >= 43 AND COUNT(pay.payment_id) >= 43
-        LIMIT 1)
+        LIMIT 1),
+     random_address AS (SELECT address_id FROM public.address
+     			ORDER BY RANDOM () LIMIT 1)
 UPDATE public.customer
 SET
     first_name = 'ALIAKSEI',
     last_name = 'PAPOU',
-    address_id = (SELECT address_id FROM public.address 
-    		  WHERE address = '270 Amroha Parkway'), 
+    address_id = (SELECT address_id FROM random_address), 
     email = 'Aliaksei.Papou1@gmail.com',
-    last_update = CURRENT_DATE
+    last_update = CURRENT_TIMESTAMP
 WHERE
     customer_id = (SELECT * FROM customer_change)
+AND NOT EXISTS (SELECT 1 FROM public.customer  
+		WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+		AND UPPER (last_name) = UPPER ('PAPOU'))  
 RETURNING customer_id, first_name, last_name, email;
 COMMIT;
 
@@ -138,13 +145,13 @@ COMMIT;
 BEGIN;
 DELETE FROM public.payment 
 WHERE customer_id = (SELECT customer_id FROM public.customer 
-		     WHERE first_name = 'ALIAKSEI' 
-		     AND last_name = 'PAPOU');
+		     WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+		     AND UPPER (last_name) = UPPER ('PAPOU'));
 --delete from rental table
 DELETE FROM public.rental
 WHERE customer_id = (SELECT customer_id FROM public.customer 
-		     WHERE first_name = 'ALIAKSEI' 
-		     AND last_name = 'PAPOU')
+		     WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+		     AND UPPER (last_name) = UPPER ('PAPOU'))
 RETURNING *;
 COMMIT;
 
@@ -157,16 +164,15 @@ INSERT INTO public.rental (rental_date, inventory_id, customer_id, return_date, 
 SELECT CURRENT_TIMESTAMP, 
        inv.inventory_id, 
        (SELECT customer_id FROM public.customer 
-	    	WHERE first_name = 'ALIAKSEI' 
-	    	AND last_name = 'PAPOU'),
-       CURRENT_DATE + (fil.rental_duration * INTERVAL '1 week'),
+	WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+	AND UPPER (last_name) = UPPER ('PAPOU')),
+       CURRENT_TIMESTAMP + (fil.rental_duration * INTERVAL '1 week'),
        1, 
        CURRENT_TIMESTAMP
 FROM public.inventory inv
 JOIN public.film fil 
 ON inv.film_id = fil.film_id
-WHERE fil.title IN ('HACHIKO: A DOG’S TALE', 'WHAT WOMEN WANT', 'F1') 
-AND inv.store_id = 1
+WHERE UPPER (fil.title) IN ('HACHIKO: A DOG’S TALE', 'WHAT WOMEN WANT', 'F1') 
 RETURNING *;
 COMMIT;
 
@@ -174,8 +180,8 @@ COMMIT;
 BEGIN;
 INSERT INTO public.payment (customer_id, staff_id, rental_id, amount, payment_date)
 SELECT (SELECT customer_id FROM public.customer 
-	    WHERE first_name = 'ALIAKSEI' 
-	    AND last_name = 'PAPOU'), 
+	WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+	AND UPPER (last_name) = UPPER ('PAPOU')), 
 	1, 
 	ren.rental_id, 
 	fil.rental_rate, 
@@ -186,8 +192,8 @@ ON ren.inventory_id = inv.inventory_id
 INNER JOIN public.film fil 
 ON inv.film_id = fil.film_id
 WHERE ren.customer_id = (SELECT customer_id FROM public.customer 
-			 WHERE first_name = 'ALIAKSEI' 
-			 AND last_name = 'PAPOU')
+			 WHERE UPPER (first_name) = UPPER ('ALIAKSEI') 
+			 AND UPPER (last_name) = UPPER ('PAPOU'))
 AND NOT EXISTS (SELECT 1 FROM public.payment pay 
 		WHERE pay.rental_id = ren.rental_id)
 RETURNING *;
