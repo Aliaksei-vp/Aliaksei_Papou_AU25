@@ -69,7 +69,7 @@ INNER JOIN public.store st
 	ON inv.store_id = st.store_id
 INNER JOIN public.address ad 
 	ON st.address_id = ad.address_id
-WHERE CAST(payment_date AS DATE) >= '2017-04-01'::date
+WHERE payment_date >= '2017-04-01'::date
 GROUP BY store_address;
 
 
