@@ -1,35 +1,35 @@
 --Create database 
-CREATE DATABASE political_campaign_db
+CREATE DATABASE political_campaign_db;
 
 --Create schema
-CREATE SCHEMA IF NOT EXISTS political_campaign
+CREATE SCHEMA IF NOT EXISTS political_campaign;
 
 --Create tables
 --Create parent tables before child tables to avoid foreign key errors
 CREATE TABLE IF NOT EXISTS political_campaign.campaign (
-    campaign_id INT PRIMARY KEY,
+    campaign_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100),
     start_date DATE,
     end_date DATE,
     description TEXT);
     
 CREATE TABLE IF NOT EXISTS political_campaign.voter (
-    voter_id INT PRIMARY KEY,
+    voter_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     campaign_id INT NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     date_of_birth DATE,
     email VARCHAR(100),
     phone VARCHAR(20),
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id));
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id));
     
 CREATE TABLE IF NOT EXISTS political_campaign.donor (
-    donor_id INT PRIMARY KEY,
+    donor_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100),
     contact_info VARCHAR(200));
     
 CREATE TABLE IF NOT EXISTS political_campaign.volunteer (
-    volunteer_id INT PRIMARY KEY,
+    volunteer_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone VARCHAR(20),
@@ -37,83 +37,83 @@ CREATE TABLE IF NOT EXISTS political_campaign.volunteer (
     availability VARCHAR(100));
     
 CREATE TABLE IF NOT EXISTS political_campaign.event_type (
-    event_type_id INT PRIMARY KEY,
+    event_type_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type_name VARCHAR(50));
     
 CREATE TABLE IF NOT EXISTS political_campaign.problem_type (
-    problem_type_id INT PRIMARY KEY,
+    problem_type_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type_name VARCHAR(50)); 
 
 CREATE TABLE IF NOT EXISTS political_campaign.volunteer_role (
-    role_id INT PRIMARY KEY,
+    role_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     role_name VARCHAR(50));
     
 CREATE TABLE IF NOT EXISTS political_campaign.contribution (
-    contribution_id INT PRIMARY KEY,
+    contribution_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     donor_id INT NOT NULL,
     campaign_id INT NOT NULL,
     amount DECIMAL,
     c_date date,
-    FOREIGN KEY (donor_id) REFERENCES donor(donor_id),
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id));
+    FOREIGN KEY (donor_id) REFERENCES political_campaign.donor(donor_id),
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id));
     
 CREATE TABLE IF NOT EXISTS political_campaign.spending (
-    spending_id INT PRIMARY KEY,
+    spending_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     campaign_id INT NOT NULL,
     type VARCHAR(50) NOT NULL,
     amount DECIMAL,
     s_date DATE,
     description TEXT,
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id));
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id));
 
 CREATE TABLE IF NOT EXISTS political_campaign.event (
-    event_id INT PRIMARY KEY,
+    event_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     campaign_id INT NOT NULL,
     event_type_id INT NOT NULL,
     name VARCHAR(100),
     e_date TIMESTAMP,
     description TEXT,
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id),
-    FOREIGN KEY (event_type_id) REFERENCES event_type(event_type_id));
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id),
+    FOREIGN KEY (event_type_id) REFERENCES political_campaign.event_type(event_type_id));
     
 CREATE TABLE IF NOT EXISTS political_campaign.survey (
-    survey_id INT PRIMARY KEY,
+    survey_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     campaign_id INT NOT NULL,
     name VARCHAR(100),
     s_date DATE,
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id));
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id));
 
 CREATE TABLE IF NOT EXISTS political_campaign.survey_response (
-    response_id INT PRIMARY KEY,
+    response_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     survey_id INT NOT NULL,
     voter_id INT NOT NULL,
     response_date DATE,
     response TEXT,
-    FOREIGN KEY (survey_id) REFERENCES survey(survey_id),
-    FOREIGN KEY (voter_id) REFERENCES voter(voter_id));
+    FOREIGN KEY (survey_id) REFERENCES political_campaign.survey(survey_id),
+    FOREIGN KEY (voter_id) REFERENCES political_campaign.voter(voter_id));
     
 CREATE TABLE IF NOT EXISTS political_campaign.problem (
-    problem_id INT PRIMARY KEY,
+    problem_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     campaign_id INT NOT NULL,
     problem_type_id INT NOT NULL,
     reported_date DATE,
     description TEXT NOT NULL,
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id),
-    FOREIGN KEY (problem_type_id) REFERENCES problem_Type(problem_type_id),
-    parent_problem_id INT REFERENCES problem(problem_id)); -- Self-referential relationship
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id),
+    FOREIGN KEY (problem_type_id) REFERENCES political_campaign.problem_Type(problem_type_id),
+    parent_problem_id INT REFERENCES political_campaign.problem(problem_id)); -- Self-referential relationship
 
 CREATE TABLE IF NOT EXISTS political_campaign.task (
-    task_id INT PRIMARY KEY,
+    task_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100),
     description TEXT);
     
 CREATE TABLE IF NOT EXISTS political_campaign.volunteer_task (
-    volunteer_task_id INT PRIMARY KEY,
+    volunteer_task_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     volunteer_id INT NOT NULL,
     task_id INT NOT NULL,
     assigned_date DATE,
-    FOREIGN KEY (volunteer_id) REFERENCES volunteer(volunteer_id),
-    FOREIGN KEY (task_id) REFERENCES task(task_id));
+    FOREIGN KEY (volunteer_id) REFERENCES political_campaign.volunteer(volunteer_id),
+    FOREIGN KEY (task_id) REFERENCES political_campaign.task(task_id));
 
 CREATE TABLE IF NOT EXISTS political_campaign.volunteer_assignment (
     volunteer_id INT NOT NULL,
@@ -122,10 +122,10 @@ CREATE TABLE IF NOT EXISTS political_campaign.volunteer_assignment (
     task_id INT NOT NULL,
     assignment_date DATE,
     PRIMARY KEY (volunteer_id, role_id),
-    FOREIGN KEY (volunteer_id) REFERENCES volunteer(volunteer_id),
-    FOREIGN KEY (role_id) REFERENCES volunteer_role(role_id),
-    FOREIGN KEY (campaign_id) REFERENCES campaign(campaign_id),
-    FOREIGN KEY (task_id) REFERENCES task(task_id));
+    FOREIGN KEY (volunteer_id) REFERENCES political_campaign.volunteer(volunteer_id),
+    FOREIGN KEY (role_id) REFERENCES political_campaign.volunteer_role(role_id),
+    FOREIGN KEY (campaign_id) REFERENCES political_campaign.campaign(campaign_id),
+    FOREIGN KEY (task_id) REFERENCES political_campaign.task(task_id));
 
 
 --Apply five check constraints across the tables to restrict certain values
@@ -189,7 +189,7 @@ BEGIN
     INTO _is_not_null;
     IF NOT _is_not_null THEN
         EXECUTE $q$ALTER TABLE political_campaign.Voter
-            ALTER COLUMN date_of_birth SET NOT NULL$q$;
+            ALTER COLUMN date_of_birth SET NOT NULL $q$;
     END IF;
 END $$;
 
@@ -335,21 +335,21 @@ Using SELECT and dynamic ID's to avoid hard coding;
 Using RETURNING for traceability */
 
 BEGIN;
-INSERT INTO political_campaign.Campaign (campaign_id, name, start_date, end_date, description)
-SELECT * FROM (SELECT 1 AS campaign_id,
+INSERT INTO political_campaign.сampaign (name, start_date, end_date, description)
+SELECT * FROM (SELECT 
 		'City mayor' AS name,
 		'2025-10-01'::date AS start_date,
 		'2025-12-01'::date AS end_date,
 		'mayoral campaign' AS description) AS n_cam
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.Campaign cam 
-		  WHERE cam.name = n_cam.name)
+		  WHERE LOWER (cam.name) = LOWER (n_cam.name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.voter (voter_id, campaign_id, first_name, last_name, date_of_birth, email, phone)
-SELECT * FROM (SELECT 1 AS voter_id,
+INSERT INTO political_campaign.voter (campaign_id, first_name, last_name, date_of_birth, email, phone)
+SELECT * FROM (SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE campaign.name = 'City mayor') AS campaign_id,
 		'Ivan' AS first_name,
@@ -358,7 +358,7 @@ SELECT * FROM (SELECT 1 AS voter_id,
 		'Ivanov@gmail.com' AS email,
 		'375293332415' AS phone
 		UNION ALL
-		SELECT 2 AS voter_id,
+		SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE campaign.name = 'City mayor') AS campaign_id,
 		'Petr' AS first_name,
@@ -367,23 +367,22 @@ SELECT * FROM (SELECT 1 AS voter_id,
 		'petrov@gmail.com' AS email,
 		'375442232358' AS phone) AS n_vot
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.voter vot 
-		  WHERE vot.voter_id = n_vot.voter_id 
-		  AND vot.first_name = n_vot.first_name AND vot.last_name = n_vot.last_name)
+		  WHERE LOWER (vot.first_name) = LOWER (n_vot.first_name) AND LOWER (vot.last_name) = LOWER (n_vot.last_name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.donor (donor_id, name, contact_info)
-SELECT * FROM (SELECT 1 AS donor_id,
+INSERT INTO political_campaign.donor (name, contact_info)
+SELECT * FROM (SELECT 
 		'Jane' AS name,
 		'Jane1@gmail.com' AS contact_info
 		UNION ALL
-		SELECT 2 AS donor_id,
+		SELECT 
 		'Bill' AS name,
 		'Bill1@gmail.com' AS contact_info
 		UNION ALL
-		SELECT 3 AS donor_id,
+		SELECT 
 		'Garry' AS name,
 		'Garry2@gmail.com' AS contact_info) AS n_don
 ON CONFLICT (donor_id) DO NOTHING
@@ -392,82 +391,78 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.volunteer (volunteer_id, first_name, last_name, phone, email, availability)
-SELECT * FROM (SELECT 1 AS volunteer_id,
+INSERT INTO political_campaign.volunteer (first_name, last_name, phone, email, availability)
+SELECT * FROM (SELECT 
 		'Tom' AS first_name,
 		'Dill' AS last_name,
 		'375442992358' AS phone,
 		'Tomhj@gmail.com' AS email,
 		'weekends' AS availability
 		UNION ALL
-		SELECT 2 AS volunteer_id,
+		SELECT 
 		'Olga' AS first_name,
 		'Nikolova' AS last_name,
 		'375294722358' AS phone,
 		'Olga9@gmail.com' AS email,
 		'weekdays' AS availability
 		UNION ALL
-		SELECT 3 AS volunteer_id,
+		SELECT 
 		'Anna' AS first_name,
 		'Talanova' AS last_name,
 		'375442992561' AS phone,
 		'Anna99@gmail.com' AS email,
 		'weekdays and weekends' AS availability) AS n_vol
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.volunteer vol 
-		  WHERE vol.volunteer_id = n_vol.volunteer_id 
-		  AND vol.first_name = n_vol.first_name AND vol.last_name = n_vol.last_name)
+		  WHERE LOWER (vol.first_name) = LOWER (n_vol.first_name) AND LOWER (vol.last_name) = LOWER (n_vol.last_name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.event_type (event_type_id, type_name)
-SELECT * FROM (SELECT 1 AS event_type_id,
+INSERT INTO political_campaign.event_type (type_name)
+SELECT * FROM (SELECT 
 		'City hall' AS type_name
 		UNION ALL
-		SELECT 2 AS event_type_id,
+		SELECT 
 		'Rally' AS type_name
 		) AS n_event_type
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.event_type ev_tp 
-		  WHERE ev_tp.event_type_id = n_event_type.event_type_id 
-		  AND ev_tp.type_name = n_event_type.type_name)
+		  WHERE LOWER (ev_tp.type_name) = LOWER (n_event_type.type_name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.problem_type (problem_type_id, type_name)
-SELECT * FROM (SELECT 1 AS problem_type_id,
+INSERT INTO political_campaign.problem_type (type_name)
+SELECT * FROM (SELECT 
 		'Logistics' AS type_name
 		UNION ALL
-		SELECT 2 AS problem_type_id,
+		SELECT 
 		'Technical' AS type_name
 		) AS n_pr_type
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.problem_type pr_tp 
-		  WHERE pr_tp.problem_type_id = n_pr_type.problem_type_id 
-		  AND pr_tp.type_name = n_pr_type.type_name)
+		  WHERE LOWER (pr_tp.type_name) = LOWER (n_pr_type.type_name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.volunteer_role (role_id, role_name)
-SELECT * FROM (SELECT 1 AS role_id,
+INSERT INTO political_campaign.volunteer_role (role_name)
+SELECT * FROM (SELECT 
 		'Canvasser' AS role_name
 		UNION ALL
-		SELECT 2 AS problem_type_id,
+		SELECT 
 		'Event Organizer' AS type_name
 		) AS n_v_rol
 WHERE NOT EXISTS (SELECT 1 FROM political_campaign.volunteer_role vol_r 
-		  WHERE vol_r.role_id = n_v_rol.role_id 
-		  AND vol_r.role_name = n_v_rol.role_name)
+		  WHERE LOWER (vol_r.role_name) = LOWER (n_v_rol.role_name))
 RETURNING *;
 COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.contribution (contribution_id, donor_id, campaign_id, amount, c_date)
-SELECT * FROM (SELECT 1 AS contribution_id,
+INSERT INTO political_campaign.contribution (donor_id, campaign_id, amount, c_date)
+SELECT * FROM (SELECT 
 		(SELECT donor_id FROM political_campaign.donor 
 		 WHERE LOWER (donor.name) = LOWER ('Jane')) AS donor_id,
 		(SELECT campaign_id FROM political_campaign.campaign 
@@ -475,7 +470,7 @@ SELECT * FROM (SELECT 1 AS contribution_id,
 		 500 AS amount,
 		'2025-10-11'::date AS c_date
 		 UNION ALL
-		 SELECT 2 AS contribution_id,
+		 SELECT 
 		(SELECT donor_id FROM political_campaign.donor 
 		 WHERE LOWER (donor.name) = LOWER ('Bill')) AS donor_id,
 		(SELECT campaign_id FROM political_campaign.campaign 
@@ -483,7 +478,7 @@ SELECT * FROM (SELECT 1 AS contribution_id,
 		 1500 AS amount,
 		'2025-10-17'::date AS c_date
 		 UNION ALL
-		 SELECT 3 AS contribution_id,
+		 SELECT 
 		(SELECT donor_id FROM political_campaign.donor 
 		 WHERE LOWER (donor.name) = LOWER ('Garry')) AS donor_id,
 		(SELECT campaign_id FROM political_campaign.campaign 
@@ -496,8 +491,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.spending (spending_id, campaign_id, type, amount, s_date, description)
-SELECT * FROM (SELECT 1 AS spending_id,
+INSERT INTO political_campaign.spending (campaign_id, type, amount, s_date, description)
+SELECT * FROM (SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		 'Office rent' AS type,
@@ -505,7 +500,7 @@ SELECT * FROM (SELECT 1 AS spending_id,
 		'2025-10-03'::date AS s_date,
 		'Monthly rent' AS description
 		 UNION ALL
-		 SELECT 2 AS spending_id,
+		 SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		 'Advertising' AS type,
@@ -513,7 +508,7 @@ SELECT * FROM (SELECT 1 AS spending_id,
 		'2025-10-04'::date AS s_date,
 		'Flyer printing' AS description
 		 UNION ALL
-		 SELECT 3 AS spending_id,
+		 SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		 'Website Hosting' AS type,
@@ -526,8 +521,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.event (event_id, campaign_id, event_type_id, name, e_date, description)
-SELECT * FROM (SELECT 1 AS event_id,
+INSERT INTO political_campaign.event (campaign_id, event_type_id, name, e_date, description)
+SELECT * FROM (SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		 (SELECT event_type_id FROM political_campaign.event_type
@@ -536,7 +531,7 @@ SELECT * FROM (SELECT 1 AS event_id,
 		'2025-10-10'::date AS e_date,
 		'Q&A with voters' AS description
 		 UNION ALL
-		 SELECT 2 AS event_id,
+		 SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		 (SELECT event_type_id FROM political_campaign.event_type
@@ -550,14 +545,14 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.survey (survey_id, campaign_id, name, s_date)
-SELECT * FROM (SELECT 1 AS survey_id,
+INSERT INTO political_campaign.survey (campaign_id, name, s_date)
+SELECT * FROM (SELECT 
 		 (SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		'Voter Issues' AS name,
 		'2025-10-07'::date AS s_date
 		 UNION ALL
-		 SELECT 2 AS survey_id,
+		 SELECT 
 		 (SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		'Policy Feedback Survey' AS name,
@@ -569,8 +564,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.survey_response (response_id, survey_id, voter_id, response_date, response)
-SELECT * FROM (SELECT 1 AS response_id,
+INSERT INTO political_campaign.survey_response (survey_id, voter_id, response_date, response)
+SELECT * FROM (SELECT 
 		 (SELECT survey_id FROM political_campaign.survey 
 		 WHERE LOWER (survey.name) = LOWER ('Voter Issues')) AS survey_id,
 		 (SELECT voter_id FROM political_campaign.voter 
@@ -579,7 +574,7 @@ SELECT * FROM (SELECT 1 AS response_id,
 		'2025-10-05'::date AS response_date,
 		'Support policy' AS response
 		 UNION ALL
-		 SELECT 2 AS response_id,
+		 SELECT 
 		 (SELECT survey_id FROM political_campaign.survey 
 		 WHERE LOWER (survey.name) = LOWER ('Voter Issues')) AS survey_id,
 		 (SELECT voter_id FROM political_campaign.voter 
@@ -596,16 +591,16 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.task (task_id, name, description)
-SELECT * FROM (SELECT 1 AS task_id,
+INSERT INTO political_campaign.task (name, description)
+SELECT * FROM (SELECT 
 		'Distribute flyers' AS name,
 		'Hand out flyers' AS description
 		 UNION ALL
-		 SELECT 2 AS task_id,
+		 SELECT 
 		'Recruit' AS name,
 		'Recruit 10 more volunteers' AS description
 		 UNION ALL
-		 SELECT 3 AS task_id,
+		 SELECT 
 		'Organization' AS name,
 		'Ensures communication' AS description
 		) AS n_sur
@@ -615,8 +610,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.problem (problem_id, campaign_id, problem_type_id, reported_date, description)
-SELECT * FROM (SELECT 1 AS problem_id,
+INSERT INTO political_campaign.problem (campaign_id, problem_type_id, reported_date, description)
+SELECT * FROM (SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		(SELECT problem_type_id FROM political_campaign.problem_type 
@@ -624,8 +619,8 @@ SELECT * FROM (SELECT 1 AS problem_id,
 		 '2025-10-17'::date AS reported_date,
 		 'Venue issue' AS description) AS n_pr
 		 ON CONFLICT (problem_id) DO NOTHING;
-INSERT INTO political_campaign.problem (problem_id, campaign_id, problem_type_id, reported_date, description, parent_problem_id)
-SELECT * FROM (SELECT 2 AS problem_id,
+INSERT INTO political_campaign.problem (campaign_id, problem_type_id, reported_date, description, parent_problem_id)
+SELECT * FROM (SELECT 
 		(SELECT campaign_id FROM political_campaign.campaign 
 		 WHERE LOWER (campaign.name) = LOWER ('City mayor')) AS campaign_id,
 		(SELECT problem_type_id FROM political_campaign.problem_type 
@@ -641,8 +636,8 @@ COMMIT;
 
 
 BEGIN;
-INSERT INTO political_campaign.volunteer_task (volunteer_task_id, volunteer_id, task_id, assigned_date)
-SELECT * FROM (SELECT 1 AS volunteer_task_id,
+INSERT INTO political_campaign.volunteer_task (volunteer_id, task_id, assigned_date)
+SELECT * FROM (SELECT 
 		 (SELECT volunteer_id FROM political_campaign.volunteer 
 		 WHERE LOWER (volunteer.first_name) = LOWER ('Olga') 
 		 AND LOWER (volunteer.last_name) = LOWER ('Nikolova')) AS volunteer_id,
@@ -650,7 +645,7 @@ SELECT * FROM (SELECT 1 AS volunteer_task_id,
 		 WHERE LOWER (task.name) = LOWER ('Distribute flyers')) AS task_id,
 		'2025-10-05'::date AS assigned_date
 		 UNION ALL
-		 SELECT 2 AS volunteer_task_id,
+		 SELECT 
 		 (SELECT volunteer_id FROM political_campaign.volunteer 
 		 WHERE LOWER (volunteer.first_name) = LOWER ('Anna') 
 		 AND LOWER (volunteer.last_name) = LOWER ('Talanova')) AS volunteer_id,
@@ -678,7 +673,7 @@ BEGIN
           AND table_name = 'campaign'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE campaign ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.campaign ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table campaign';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table campaign';
