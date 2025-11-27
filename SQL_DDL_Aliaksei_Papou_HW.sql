@@ -690,7 +690,7 @@ BEGIN
           AND table_name = 'voter'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE voter ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.voter ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table voter';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table voter';
@@ -707,7 +707,7 @@ BEGIN
           AND table_name = 'donor'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE donor ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.donor ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table donor';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table donor';
@@ -724,7 +724,7 @@ BEGIN
           AND table_name = 'volunteer'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE volunteer ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.volunteer ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table volunteer';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table volunteer';
@@ -741,7 +741,7 @@ BEGIN
           AND table_name = 'event_type'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE event_type ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.event_type ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table event_type';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table event_type';
@@ -758,7 +758,7 @@ BEGIN
           AND table_name = 'problem_type'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE problem_type ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.problem_type ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table problem_type';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table problem_type';
@@ -775,7 +775,7 @@ BEGIN
           AND table_name = 'volunteer_role'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE volunteer_role ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.volunteer_role ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table volunteer_role';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table volunteer_role';
@@ -792,7 +792,7 @@ BEGIN
           AND table_name = 'contribution'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE contribution ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.contribution ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table contribution';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table contribution';
@@ -809,7 +809,7 @@ BEGIN
           AND table_name = 'spending'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE spending ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.spending ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table spending';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table spending';
@@ -826,7 +826,7 @@ BEGIN
           AND table_name = 'event'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE event ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.event ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table event';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table event';
@@ -843,7 +843,7 @@ BEGIN
           AND table_name = 'survey'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE survey ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.survey ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table survey';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table survey';
@@ -860,7 +860,7 @@ BEGIN
           AND table_name = 'survey_response'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE survey_response ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.survey_response ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table survey_response';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table survey_response';
@@ -877,7 +877,7 @@ BEGIN
           AND table_name = 'problem'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE problem ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.problem ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table problem';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table problem';
@@ -894,7 +894,7 @@ BEGIN
           AND table_name = 'task'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE task ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.task ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table task';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table task';
@@ -911,7 +911,7 @@ BEGIN
           AND table_name = 'volunteer_task'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE volunteer_task ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.volunteer_task ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table volunteer_task';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table volunteer_task';
@@ -928,7 +928,7 @@ BEGIN
           AND table_name = 'volunteer_assignment'
           AND column_name = 'record_ts'
     ) THEN
-        ALTER TABLE volunteer_assignment ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
+        ALTER TABLE political_campaign.volunteer_assignment ADD COLUMN record_ts DATE NOT NULL DEFAULT CURRENT_DATE;
         RAISE NOTICE 'Column record_ts added to table volunteer_assignment';
     ELSE
         RAISE NOTICE 'Column record_ts already exists in table volunteer_assignment';
