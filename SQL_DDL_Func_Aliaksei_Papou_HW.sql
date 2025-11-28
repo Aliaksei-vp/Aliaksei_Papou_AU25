@@ -4,11 +4,7 @@
 CREATE OR REPLACE VIEW public.sales_revenue_by_category_qtr AS
 SELECT
     cat.name AS category_name,
-    SUM(CASE
-        WHEN EXTRACT(QUARTER FROM pay.payment_date) = EXTRACT(QUARTER FROM CURRENT_DATE)
-    	THEN pay.amount
-    	ELSE 0 END) AS total_revenue_current_quarter,
-    SUM(pay.amount) AS total_revenue_current_year,
+    SUM(pay.amount) AS total_revenue_current_quarter,
     EXTRACT(QUARTER FROM CURRENT_DATE) AS current_quarter,
     EXTRACT(YEAR FROM CURRENT_DATE) AS current_year
 FROM public.category cat
@@ -20,7 +16,8 @@ JOIN public.rental ren
      ON inv.inventory_id = ren.inventory_id
 JOIN public.payment pay 
      ON ren.rental_id = pay.rental_id
-WHERE EXTRACT(YEAR FROM pay.payment_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+WHERE EXTRACT(QUARTER FROM pay.payment_date) = EXTRACT(QUARTER FROM CURRENT_DATE)
+AND EXTRACT(YEAR FROM pay.payment_date) = EXTRACT(YEAR FROM CURRENT_DATE)
 GROUP BY cat.name, current_year, current_quarter
 HAVING SUM(pay.amount) > 0;
 
@@ -31,17 +28,12 @@ CREATE OR REPLACE FUNCTION public.get_sales_revenue_by_category_qtr(p_date DATE)
 RETURNS TABLE(
     category_name TEXT,
     total_revenue_current_quarter NUMERIC,
-    total_revenue_current_year NUMERIC,
     current_quarter INT,
     current_year INT)
 AS $$
 SELECT
     cat.name::text AS category_name,
-    SUM(CASE
-        WHEN EXTRACT(QUARTER FROM pay.payment_date) = EXTRACT(QUARTER FROM p_date)
-        THEN pay.amount
-        ELSE 0 END)::numeric AS total_revenue_current_quarter,
-    SUM(pay.amount)::numeric AS total_revenue_current_year,
+    SUM(pay.amount)::numeric AS total_revenue_current_quarter,
     EXTRACT(QUARTER FROM p_date)::int AS current_quarter,
     EXTRACT(YEAR FROM p_date)::int AS current_year
 FROM public.category cat
@@ -53,7 +45,8 @@ JOIN public.rental ren
      ON inv.inventory_id = ren.inventory_id
 JOIN public.payment pay 
      ON ren.rental_id = pay.rental_id
-WHERE EXTRACT(YEAR FROM pay.payment_date) = EXTRACT(YEAR FROM p_date)
+WHERE EXTRACT(QUARTER FROM pay.payment_date) = EXTRACT(QUARTER FROM p_date)
+AND EXTRACT(YEAR FROM pay.payment_date) = EXTRACT(YEAR FROM p_date)
 GROUP BY cat.name, EXTRACT(YEAR FROM p_date), EXTRACT(QUARTER FROM p_date)
 HAVING SUM(pay.amount) > 0;
 $$
@@ -85,9 +78,10 @@ BEGIN
         RAISE EXCEPTION 'The list of countries cannot be empty.';
     END IF;
     FOREACH v_country IN ARRAY p_countries LOOP
-        PERFORM 1 FROM country WHERE country.country = v_country;
+        PERFORM 1 FROM country WHERE LOWER (country.country) = LOWER (v_country);
         IF NOT FOUND THEN
-            RAISE EXCEPTION 'Country "%" not found in database.', v_country;
+            RAISE NOTICE 'Country "%" not found in database.', v_country;
+            CONTINUE;        
         END IF;
         WITH country_rentals AS (
         	SELECT fil.film_id,
@@ -99,7 +93,7 @@ BEGIN
                 JOIN public.rental ren ON cust.customer_id = ren.customer_id
                 JOIN public.inventory inv ON ren.inventory_id = inv.inventory_id
                 JOIN public.film fil ON inv.film_id = fil.film_id
-            WHERE cntr.country = v_country
+            WHERE LOWER (cntr.country) = LOWER (v_country)
             GROUP BY fil.film_id)
         SELECT MAX(rental_count) INTO v_max_rentals FROM country_rentals;
         IF v_max_rentals IS NULL OR v_max_rentals = 0 THEN
@@ -107,7 +101,7 @@ BEGIN
         END IF;
         FOR v_film_data IN
         SELECT
-            cntr.country AS country,
+            (SELECT cn.country FROM public.country cn WHERE LOWER(cn.country) = LOWER(v_country)) AS country,
             fil.title AS film_title,
             fil.rating AS rating,
             lng.name AS language,
@@ -121,7 +115,7 @@ BEGIN
             JOIN public.inventory inv ON ren.inventory_id = inv.inventory_id
             JOIN public.film fil ON inv.film_id = fil.film_id
             JOIN public.language lng ON fil.language_id = lng.language_id
-        WHERE cntr.country = v_country
+        WHERE LOWER (cntr.country) = LOWER (v_country)
         GROUP BY cntr.country_id, cntr.country, fil.film_id, fil.title, fil.rating, lng.name, fil.length, fil.release_year
         HAVING COUNT(ren.rental_id) = v_max_rentals
         ORDER BY fil.title ASC -- I checked, sometimes films have the same number of rentals, so I decided to add sorting
@@ -156,7 +150,7 @@ RETURNS TABLE (
     customer_name text,
     rental_date timestamp 
 )
-LANGUAGE plpgsql
+LANGUAGE 	plpgsql
 AS $$
 DECLARE
     film_data RECORD;
@@ -227,16 +221,16 @@ DECLARE
     v_language_exists BOOLEAN;
 BEGIN
     SELECT EXISTS (SELECT 1 FROM public.language
-        	   WHERE name = p_language_name) 
+        	   WHERE LOWER (name) = LOWER (p_language_name)) 
     INTO v_language_exists;
     IF NOT v_language_exists THEN
-        RAISE EXCEPTION 'Language "%" not found in table "language".', p_language_name;
+        RAISE NOTICE 'Language "%" not found. Inserting new language into table "language".', p_language_name;
+	INSERT INTO public.language (name) --If language is not found, add it
+	SELECT p_language_name
+	RETURNING language_id INTO v_language_id;
     END IF;
-    SELECT language_id INTO v_language_id
-    FROM public.language
-    WHERE name = p_language_name;
     IF EXISTS (SELECT 1 FROM film
-               WHERE title = p_title AND release_year = p_release_year) 
+               WHERE LOWER (title) = LOWER (p_title) AND release_year = p_release_year) 
     THEN
         RAISE EXCEPTION 'A film with the title "%" and release year "%" already exists.', p_title, p_release_year;
     END IF;
@@ -253,10 +247,6 @@ $$ LANGUAGE plpgsql;
 --Query (example): 
 --SELECT new_movie('New super movie');
 
---Add 'Klingon' language if it doesn't exist
-INSERT INTO language (name, last_update)
-SELECT 'Klingon', CURRENT_TIMESTAMP
-WHERE NOT EXISTS (SELECT 1 FROM language WHERE name = 'Klingon');
 
 
 
