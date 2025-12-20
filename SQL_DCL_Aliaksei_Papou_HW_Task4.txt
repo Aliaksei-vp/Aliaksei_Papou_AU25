@@ -1,0 +1,65 @@
+Task 4.1: How can one restrict access to certain columns of a database table?
+
+    Access to specific columns in the table is restricted using detailed GRANT permissions at the column level (Column-level privileges).
+    The following approaches are used for this purpose:
+- Explicit specification of columns when granting rights: The administrator grants permissions (SELECT, INSERT, UPDATE) only for those columns that need to be accessed:
+SQL query:
+GRANT SELECT (name, email) ON public.customer TO restricted_role;
+- Using Views: A VIEW is created that includes only the permitted columns. Rights are then granted on this view rather than on the original table:
+SQL queries:
+CREATE VIEW public.customer_contacts AS
+SELECT name, email FROM public.customer;
+
+GRANT SELECT ON public.customer_contacts TO restricted_role;
+
+
+Task 4.2: What is the difference between user identification and user authentication?
+
+    The difference lies in the sequence of actions and the purpose of each process:
+    Identification: This is the process of a user declaring who they are. The user provides their name, login, or ID to the system. Essentially, it is an answer to the question, “Who are you?”
+    Authentication: This is the process of verifying the authenticity of the declared identification. The system requires proof (password, biometric data, token, certificate) that the user is who they claim to be. In essence, this is the answer to the question: “Prove it.”
+    In the PostgreSQL DBMS, identification occurs first (the user enters the username psql -U Aliaksei), followed by authentication (the system verifies the entered password Aliaksei).
+    
+    
+Task 4.3: What are the recommended authentication protocols for PostgreSQL?
+
+    PostgreSQL supports various authentication methods, which are configured in the pg_hba.conf file.
+The choice of protocol depends on security requirements and network infrastructure.
+Recommended protocols, listed in order of increasing security/modernity:
+- SCRAM-SHA-256 (Salted Challenge Response Authentication Mechanism): This is the current standard and preferred method. It provides reliable password protection, does not transmit passwords in plain text over the network, and is resistant to brute force attacks, unlike the outdated MD5.
+- GSSAPI or SSPI (Kerberos): Recommended for corporate environments with a centralized directory service (Active Directory). Provides single sign-on (SSO) and strong cryptography.
+- SSL Certificates (Client Certificates): Very high level of security. Instead of a password, a cryptographic client certificate is used, which eliminates password compromise.
+- Peer/Ident: Used only for local connections within a single operating system when the OS has already verified the user. 
+It is strongly recommended not to use trust (no authentication) and md5 (outdated and vulnerable).
+
+
+Task 4.4: What is proxy authentication in PostgreSQL and what is it for? Why does it make the previously discussed role-based access control easier to implement?
+
+    Proxy authentication is a mechanism that allows one privileged role (proxy role) to connect to a database and then legally switch to any other, less privileged role without knowing its password.
+    Proxy authentication is often used in multi-tier applications (e.g., web servers) where there is a single connection pool:
+The application connects to the database as app_admin.
+When a real user (e.g., client_Aliaksei) logs into the web interface, the application uses proxy authentication to temporarily operate with client_Aliaksei's privileges.
+    Proxy authentication greatly simplifies RBAC because:
+- Centralized entry point: The application supports only one (or a few) highly privileged connections to the database. The application needs to know the password for only one account (the proxy), rather than for all end users.
+- Delegation of rights without passwords: The administrator does not need to manage hundreds of passwords for end users of the database. He only manages the proxy role password for the application.
+- Security, isolation, and auditing: The application can dynamically assume the identity (role) of the end user, allowing RLS (row-level security) and current_user mechanisms to work correctly, isolating one client's data from another, even if they use the same physical connection to the database. Each action in the database is performed under a specific end role, which simplifies auditing (action logging) and allows RLS (row-level security) policies that depend on the current user to be applied correctly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
