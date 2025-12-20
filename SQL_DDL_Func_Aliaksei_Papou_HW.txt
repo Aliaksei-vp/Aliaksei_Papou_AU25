@@ -1,0 +1,359 @@
+Task 6.1 What operations do the following functions perform: film_in_stock, film_not_in_stock, inventory_in_stock, get_customer_balance, inventory_held_by_customer, rewards_report, last_day?
+
+
+-film_in_stock-
+    The film_in_stock function determines whether copies of the specified film are available in a particular store. 
+    Operations performed:
+    Accepts input parameters:
+1. p_film_id (integer): ID of the film whose availability needs to be checked.
+2. p_store_id (integer): ID of the store where the availability of the film should be checked.
+    Queries data from the inventory table:
+The function executes the query SELECT inventory_id FROM inventory to find inventory records corresponding to the specified film_id and store_id.
+    Uses the nested function inventory_in_stock:
+For each potential inventory record (a copy of the film in the store), another function, inventory_in_stock(inventory_id), is called. This helper function checks whether that particular copy of the film is currently rented out (i.e., the return_date in the rental table is NULL for it).
+    Filters the results:
+Only those inventory_id values for which the inventory_in_stock function returned a true value (i.e., which are actually available in the store) are returned.
+    The main purpose of the function is to provide a list of all copies of a particular film available for rent in a particular store.
+
+
+-film_not_in_stock-
+    The film_not_in_stock function determines which specific copies (instances) of the specified film are currently unavailable (on loan) at a given store.
+    Operations performed:
+    Accepts input parameters:
+1. p_film_id (integer): ID of the film whose copies need to be checked.
+2. p_store_id (integer): ID of the store where the check is performed.
+    Requests data from the inventory table:
+The function performs a SELECT inventory_id FROM inventory query to find all inventory records related to the specified film (film_id) and store (store_id).
+    Uses the nested function inventory_in_stock with the NOT negation:
+For each copy of the film found in the store, the helper function inventory_in_stock(inventory_id) is called.
+The NOT operator is applied to the result of this helper function. This means that only those inventory records are selected for which inventory_in_stock() returned a false value (i.e., the copy is not available, which means it has been rented).
+    Filters the results:
+Only those inventory_id that are currently rented by customers are returned.
+    The main purpose of the function is to provide a list of all copies of a particular film in a particular store that are currently unavailable for rent (are with customers).
+
+
+-inventory_in_stock-
+    The inventory_in_stock function determines whether a specific individual film copy (identified by its inventory_id) is currently available to be rented.
+    Operations performed:
+    Accepts the input parameter:
+1. p_inventory_id (integer): The unique identifier of the specific copy of the film (the specific physical copy) to be checked.
+    Checks for rental records:
+The function first counts the number of all records in the rental table for a given p_inventory_id.
+If there are no rental records at all (v_rentals = 0), it means that this copy has either just arrived or has never been rented out, and it is considered available (RETURN TRUE).
+    Checks the return status if the item has been rented:
+If rental records exist, the function performs a second query to count the number of rental records for a given inventory_id where return_date has a value of NULL.
+return_date IS NULL means that the item has been rented but not yet returned.
+    Returns a logical result:
+If the number of unreturned rentals is greater than zero (v_out > 0), it means that the item is currently with the customer, and the function returns FALSE (out of stock).
+Otherwise (if all rental records have a return date), the function returns TRUE (in stock).
+    The main purpose of the inventory_in_stock function is to implement the business logic of determining the availability of a specific physical copy of a film for a new rental.
+
+
+-get_customer_balance-
+    The get_customer_balance function calculates the customer's financial balance (debt) as of a specific date. It aggregates all applicable rental fees and deducts all payments made up to that point in time.
+    Operations performed:
+    Accepts input parameters:
+1. p_customer_id (integer): ID of the customer whose balance needs to be calculated.
+2. p_effective_date (timestamp with time zone): Date and time for which the balance is calculated. Only transactions (rentals and payments) made up to and including this date are taken into account.
+    Calculates the total rental fee (v_rentfees):
+The function queries the film, inventory, and rental tables to find all rentals made by this customer before p_effective_date.
+The base rental cost (film.rental_rate) for each such transaction is summed.
+    Calculates the total late fees (v_overfees):
+The function queries the rental data again to determine the late return fees.
+For each rental where the actual rental duration (return_date - rental_date) exceeds the allotted duration (film.rental_duration), the difference in days is calculated.
+The penalty is charged at a rate of $1 for each day overdue (the calculation logic uses epoch extraction and division by 86,400 seconds to obtain the number of days). 
+    Calculates the total amount of payments (v_payments):
+The function queries the payment table to sum all payments made by the customer before p_effective_date.
+    Returns the final balance:
+The final balance is calculated as (Total rentals + Total penalties) - Total payments.
+    The function provides a snapshot of the customer's account financial status at a specific point in time.
+
+
+-inventory_held_by_customer-
+    The inventory_held_by_customer function determines which customer currently has the specified inventory item (film copy).
+    Operations performed:
+    Accepts the input parameter:
+1. p_inventory_id (integer): Unique identifier of a specific film item (a specific physical copy).
+    Requests data about the current rental:
+The function executes a query on the rental table, searching for a record that meets two conditions simultaneously:
+inventory_id = p_inventory_id: The record refers to the film copy being searched for.
+return_date IS NULL: The rental record has not yet been closed, i.e., the item has not been returned.
+    Identifies the customer:
+If such a record is found, the customer_id (customer identifier) is extracted from it and stored in the local variable v_customer_id.
+    Returns the result:
+The function returns v_customer_id (an integer).
+If the film is currently with the customer (not returned), the ID of that customer is returned.
+    The main purpose of the function is to quickly determine who is responsible for a specific, currently unreturned copy of the film.
+
+
+-rewards_report-
+    The rewards_report function generates a report that identifies a list of customers who meet certain criteria for receiving rewards based on their purchasing activity during the previous month.
+    The function performs the following basic operations:
+    Accepts input parameters and performs checks:
+1. min_monthly_purchases (integer): Minimum number of purchases required per month.
+2. min_dollar_amount_purchased (numeric): Minimum total amount spent per month.
+Validity checks: The function contains a basic check of the input data. If any of the minimum thresholds is zero, an exception (error) is generated and the function stops executing.
+    Determines the time range:
+The function automatically determines the start and end dates of the penultimate full month relative to the current date (offset by 3 months back, then truncated to the 1st day of the month, then search for the last day of that month).
+    Creates a temporary table: A temporary table tmpCustomer is created to store the customer_id of those customers who meet the report criteria.
+    Filters customers by reward criteria
+An INSERT SQL query is generated and executed, which selects customers from the payment table within the specified time range.
+Customers are grouped by customer_id, and HAVING filter conditions are applied to them:
+The total amount of payments (SUM(p.amount)) must exceed min_dollar_amount_purchased.
+The number of payments (COUNT(customer_id)) must exceed min_monthly_purchases.
+The IDs of the corresponding customers are entered into the temporary table tmpCustomer.
+    Returns the complete set of customer data:
+The function uses a FOR...LOOP and RETURN NEXT to iterate through the temporary table tmpCustomer and join it with the main table customer.
+Complete rows (the entire structure) from the customer table are returned for all customers who passed the selection. The return type RETURNS SETOF customer confirms that the function returns a set of records that matches the structure of the customer table.
+    Clears temporary resources:
+At the end of execution, the temporary table tmpCustomer is deleted (DROP TABLE tmpCustomer).
+    The function automates the process of identifying “valuable” customers for the past month, based on specified thresholds for spending and number of purchases.
+
+
+-last_day-
+    The last_day function performs the operation of determining the last calendar day of the month for a given timestamp.
+    Operations performed:
+    Accepts an input parameter:
+A single parameter of type timestamp with time zone.
+    The function logic uses a CASE conditional statement to determine the last day of the month in two ways, depending on whether the input month is December:
+If the month is December (12):
+It determines the beginning of the next year (for example, 2026-01-01).
+Then it subtracts one day (INTERVAL ‘1 day’) from the beginning of the next year, resulting in December 31 of the current year.
+If the month is any other month (1 through 11):
+It determines the beginning of the next month of the current year (for example, if the input month was November, it finds 2025-12-01).
+Then it subtracts one day (INTERVAL ‘1 day’) from the beginning of the next month, resulting in the last day of the current month (for example, November 30, 2025).
+    Returns the result:
+The function returns the date of the last day of the month in date format.
+    The last_day function provides a convenient, portable way to get the exact end date of a month in PostgreSQL, taking into account the varying number of days in months and leap years.
+
+
+Task 6.2 Why does ‘rewards_report’ function return 0 rows? Correct and recreate the function, so that it's able to return rows properly.
+
+    The rewards_report function returns 0 rows because there is an error in the calculation of the time range in its logic.
+The error is in this part of the code:
+    last_month_start := CURRENT_DATE - ‘3 month’::interval;
+    last_month_start := to_date((extract(YEAR FROM last_month_start) || ‘-’ || extract(MONTH FROM last_month_start) || ‘-01’),‘YYYY-MM-DD’);
+    last_month_end := LAST_DAY(last_month_start);
+The expression CURRENT_DATE - ‘3 month’::interval for this date gives 2025-08-23.
+The next line truncates the date to the first day of the month: 2025-08-01.
+LAST_DAY(last_month_start) sets the end of the range as 2025-08-31.
+Thus, the function attempts to find customers who made purchases in August 2025.
+But the payment table only contains data for the period from January to June 2017. There are simply no payments in August 2025. Therefore, the query returns an empty result.
+    To ensure that the function returns data correctly and remains dynamic, we will find the last month in which there were payments in the payment table. Instead of using CURRENT_DATE as a starting point, we will use the most recent payment date (MAX(payment_date)) as the “current” date for the report.
+    To change the function, add variable (last_payment_date) in which we will define the last payment date.
+
+CREATE OR REPLACE FUNCTION public.rewards_report(IN min_monthly_purchases integer,IN min_dollar_amount_purchased numeric)
+    RETURNS SETOF customer
+    LANGUAGE 'plpgsql'
+    VOLATILE SECURITY DEFINER
+    PARALLEL UNSAFE
+    COST 100    ROWS 1000 
+AS $BODY$
+DECLARE
+    last_month_start DATE;
+    last_month_end DATE;
+	last_payment_date DATE; --Add new variable
+rr RECORD;
+tmpSQL TEXT;
+BEGIN
+    IF min_monthly_purchases = 0 THEN
+        RAISE EXCEPTION 'Minimum monthly purchases parameter must be > 0';
+    END IF;
+    IF min_dollar_amount_purchased = 0.00 THEN
+        RAISE EXCEPTION 'Minimum monthly dollar amount purchased parameter must be > $0.00';
+    END IF;
+    
+--Get the last payment date
+ SELECT MAX(payment_date)::DATE INTO last_payment_date FROM payment;
+--Null check
+    IF last_payment_date IS NULL THEN
+        RETURN;
+    END IF;
+    
+--Use the last_payment_date instead of CURRENT_DATE
+    last_month_start := last_payment_date - '3 month'::interval;
+    last_month_start := to_date((extract(YEAR FROM last_month_start) || '-' || extract(MONTH FROM last_month_start) || '-01'),'YYYY-MM-DD');
+    last_month_end := LAST_DAY(last_month_start);
+
+    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY);
+    tmpSQL := 'INSERT INTO tmpCustomer (customer_id)
+        SELECT p.customer_id
+        FROM payment AS p
+        WHERE DATE(p.payment_date) BETWEEN '||quote_literal(last_month_start) ||' AND '|| quote_literal(last_month_end) || '
+        GROUP BY customer_id
+        HAVING SUM(p.amount) > '|| min_dollar_amount_purchased || '
+        AND COUNT(customer_id) > ' ||min_monthly_purchases ;
+    EXECUTE tmpSQL;
+    FOR rr IN EXECUTE 'SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id' LOOP
+        RETURN NEXT rr;
+    END LOOP;
+    tmpSQL := 'DROP TABLE tmpCustomer';
+    EXECUTE tmpSQL;
+RETURN;
+END
+$BODY$;
+
+
+Task 6.3 Is there any function that can potentially be removed from the dvd_rental codebase? If so, which one and why?
+
+In my opinion, this is the last_day function.
+This function implements the logic of determining the last day of the month for a given date. It uses a rather cumbersome and inefficient method of string concatenation and date arithmetic to achieve its goal.
+In PostgreSQL, we can use a built-in, more readable function for this purpose.
+Instead of using the last_day function, we can use DATE_TRUNC: (DATE_TRUNC('month', selected_date) + INTERVAL '1 month - 1 day')::DATE;
+
+
+Task 6.4 * The ‘get_customer_balance’ function describes the business requirements for calculating the client balance. Unfortunately, not all of them are implemented in this function. Try to change function using the requirements from the comments.
+
+In the provided get_customer_balance function, the comments describe four business requirements. However, the implementation in the body of the function only takes into account requirements 1, 2, and 4. Requirement 3 (IF A FILM IS MORE THAN RENTAL_DURATION * 2 OVERDUE, CHARGE THE REPLACEMENT_COST) is not implemented.
+
+CREATE OR REPLACE FUNCTION public.get_customer_balance(IN p_customer_id integer, IN p_effective_date timestamp with time zone)
+RETURNS numeric
+LANGUAGE 'plpgsql'
+VOLATILE
+PARALLEL UNSAFE
+COST 100
+AS $BODY$
+DECLARE
+    v_rentfees DECIMAL(5,2);      -- fees paid to rent the videos initially
+    v_overfees DECIMAL(5,2);      -- late fees for prior rentals
+    v_payments DECIMAL(5,2);      -- sum of payments made previously
+    v_rental_duration INTERVAL;   -- rental duration
+    v_actual_duration INTERVAL;   -- actual rental duration
+    v_overdue_duration INTERVAL;  -- overdue time
+    v_daily_fine NUMERIC(5,2) := 1.00; -- Penalty for each day overdue
+BEGIN
+    -- rental fees for all previous rentals
+    SELECT COALESCE(SUM(f.rental_rate), 0) INTO v_rentfees
+    FROM film f
+    JOIN inventory i ON f.film_id = i.film_id
+    JOIN rental r ON i.inventory_id = r.inventory_id
+    WHERE r.rental_date <= p_effective_date
+      AND r.customer_id = p_customer_id;
+    -- one dollar for every day the previous rentals are overdue
+    -- and if a film is more than rental_duration * 2 overdue, charge the replacement_cost
+
+    -- the penalty calculation logic now handles both scenarios: daily penalty or full replacement cost
+    SELECT COALESCE(SUM(
+        CASE 
+            WHEN r.return_date IS NULL THEN -- if the film has not been returned by the effective_date, use the effective_date as the return date to calculate the penalty.
+                 (p_effective_date::date - r.rental_date::date)::INTEGER * v_daily_fine
+            WHEN (r.return_date - r.rental_date) > (f.rental_duration * '1 day'::interval * 2) THEN
+                 -- requirement 3: If the delay exceeds the rental duration by more than 2 times, charge replacement_cost
+                 f.replacement_cost
+            WHEN (r.return_date - r.rental_date) > (f.rental_duration * '1 day'::interval) THEN
+                 -- requirement 2: If there is an overdue, but not double, count the days overdue and multiply by $1
+                 EXTRACT(DAY FROM (r.return_date - r.rental_date) - (f.rental_duration * '1 day'::interval)) * v_daily_fine
+            ELSE 
+                 0 -- film was returned on time
+        END
+    ), 0) INTO v_overfees
+    FROM rental r
+    JOIN inventory i ON r.inventory_id = i.inventory_id
+    JOIN film f ON i.film_id = f.film_id
+    WHERE r.rental_date <= p_effective_date
+      AND r.customer_id = p_customer_id;
+    -- subtract all payments made before the date specified
+    SELECT COALESCE(SUM(p.amount),0) INTO v_payments
+    FROM payment p
+    WHERE p.payment_date <= p_effective_date
+    AND p.customer_id = p_customer_id;
+    RETURN v_rentfees + v_overfees - v_payments;
+END
+$BODY$;
+
+
+Task 6.5 * How do ‘group_concat’ and ‘_group_concat’ functions work? (database creation script might help) Where are they used?
+
+    group_concat and _group_concat functions work together as an aggregate function for concatenating strings (combining multiple values from different strings into a single string separated by commas).
+    The _group_concat function
+This is a helper function that determines how to concatenate two separate strings.
+The function accepts two input parameters of type TEXT: $1 and $2.
+It uses the CASE statement:
+If $2 is NULL, it returns only $1.
+If $1 is NULL, it returns only $2.
+Otherwise, it concatenates them with a comma and a space: $1 || ‘, ’ || $2.
+    The group_concat function
+This is an aggregate function that uses _group_concat to process the entire set of rows.
+The function converts the _group_concat function into an aggregate that can be used with the GROUP BY operator.
+When we call SELECT group_concat(column_name) FROM table GROUP BY ..., the following happens:
+For each row in the group, it calls _group_concat, passing the current accumulated value ($1) and the value from the current row ($2).
+It repeats the step for all rows in the group.
+    These functions are used in VIEWS to create convenient summary data. In the actor_info view, they combine category names and film titles into a single line to make it easier to read which categories and films an actor has appeared in.
+In the film_list and nicer_but_slower_film_list views, they combine the actors who appeared in the film into a single line.
+
+
+Task 6.6 * What does ‘last_updated’ function do? Where is it used?
+
+    last_updated is an audit and change tracking mechanism that automatically keeps metadata about the modification time of database records up to date. 
+This function ensures that the last_update field in any table to which it is linked always contains the exact timestamp of the last modification of the row.
+    "RETURNS trigger" contained in the code: Indicates that this function is intended for use as a trigger.
+"NEW.last_update = CURRENT_TIMESTAMP"; This is a key operation. NEW is a variable in the trigger context that represents the row of data that is currently being inserted or updated. The function assigns the current system time (CURRENT_TIMESTAMP) to the last_update column of this row.
+"RETURN NEW"; Returns the modified row back to the INSERT or UPDATE operation, allowing it to complete with the current time.
+    The last_updated function is used in almost all main database tables where it is necessary to track the time of the last change.
+    
+    
+Task 6.7 * What is tmpSQL variable for in ‘rewards_report’ function? Can this function be recreated without EXECUTE statement and dynamic SQL? Why?
+
+    The variable tmpSQL is used in the rewards_report function to store dynamically generated SQL queries.
+    The variable tmpSQL is needed to assemble the SQL query string, into which the values of the variables are inserted: last_month_start; last_month_end; min_dollar_amount_purchased; min_monthly_purchases. 
+    In the function, it is used to insert data into a temporary table and delete the temporary table.
+    We can recreate the function by replacing dynamic SQL with static SQL, using the INTO syntax to insert the query results into another table or variable.
+    
+CREATE OR REPLACE FUNCTION public.rewards_report(IN min_monthly_purchases integer, IN min_dollar_amount_purchased numeric)
+RETURNS SETOF customer
+LANGUAGE 'plpgsql'
+VOLATILE SECURITY DEFINER 
+PARALLEL UNSAFE
+COST 100 ROWS 1000
+AS $BODY$
+DECLARE
+    last_month_start DATE;
+    last_month_end DATE;
+    rr RECORD;
+BEGIN
+    --Sanity checks omitted for brevity
+    last_month_start := CURRENT_DATE - '3 month'::interval;
+    last_month_start := to_date((extract(YEAR FROM last_month_start) || '-' || extract(MONTH FROM last_month_start) || '-01'),'YYYY-MM-DD');
+    last_month_end := LAST_DAY(last_month_start);
+    --Create a temporary storage area for Customer IDs. 
+    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY) ON COMMIT DROP;
+    --Find all customers meeting the monthly purchase requirements using STATIC SQL 
+    INSERT INTO tmpCustomer (customer_id) 
+    SELECT p.customer_id 
+    FROM payment AS p 
+    WHERE DATE(p.payment_date) BETWEEN last_month_start AND last_month_end
+    GROUP BY customer_id 
+    HAVING SUM(p.amount) > min_dollar_amount_purchased 
+       AND COUNT(customer_id) > min_monthly_purchases; 
+    --Output ALL customer information of matching rewardees.
+    FOR rr IN SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id
+    LOOP
+        RETURN NEXT rr;
+    END LOOP;
+    RETURN;
+END
+$BODY$;
+
+
+
+    
+    
+
+
+
+    
+    
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
