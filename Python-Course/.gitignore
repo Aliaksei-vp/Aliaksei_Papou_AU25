@@ -10,3 +10,9 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# to avoid big files
+wikipedia_sample*
+stop_words.txt
+*.index
+index.json
