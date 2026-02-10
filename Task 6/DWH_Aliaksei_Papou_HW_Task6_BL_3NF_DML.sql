@@ -1,0 +1,1064 @@
+
+-- Add default row in each table
+
+BEGIN;
+-- GEOGRAPHY
+INSERT INTO BL_3NF.CE_REGIONS (REGION_ID, REGION_SRC_ID, REGION_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT) 
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_REGIONS WHERE REGION_ID = -1);
+
+INSERT INTO BL_3NF.CE_COUNTRIES (COUNTRY_ID, COUNTRY_SRC_ID, COUNTRY_NAME, REGION_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_COUNTRIES WHERE COUNTRY_ID = -1);
+
+INSERT INTO BL_3NF.CE_STATES (STATE_ID, STATE_SRC_ID, STATE_NAME, COUNTRY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STATES WHERE STATE_ID = -1);
+
+INSERT INTO BL_3NF.CE_CITIES (CITY_ID, CITY_SRC_ID, CITY_NAME, REGION_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_CITIES WHERE CITY_ID = -1);
+
+INSERT INTO BL_3NF.CE_DISTRICTS (DISTRICT_ID, DISTRICT_SRC_ID, DISTRICT_NAME, CITY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_DISTRICTS WHERE DISTRICT_ID = -1);
+
+INSERT INTO BL_3NF.CE_ADDRESSES (ADDRESS_ID, ADDRESS_SRC_ID, DISTRICT_ID, POSTAL_CODE, ADDRESS, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_ADDRESSES WHERE ADDRESS_ID = -1);
+
+-- PRODUCTS
+INSERT INTO BL_3NF.CE_CATEGORIES (CATEGORY_ID, CATEGORY_SRC_ID, CATEGORY_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_CATEGORIES WHERE CATEGORY_ID = -1);
+
+INSERT INTO BL_3NF.CE_SUBCATEGORIES (SUBCATEGORY_ID, SUBCATEGORY_SRC_ID, SUBCATEGORY_NAME, CATEGORY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_SUBCATEGORIES WHERE SUBCATEGORY_ID = -1);
+
+INSERT INTO BL_3NF.CE_COLORS (COLOR_ID, COLOR_SRC_ID, COLOR_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_COLORS WHERE COLOR_ID = -1);
+
+INSERT INTO BL_3NF.CE_STORAGE_CAPACITIES (STORAGE_CAPACITY_ID, STORAGE_CAPACITY_SRC_ID, STORAGE_CAPACITY, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORAGE_CAPACITIES WHERE STORAGE_CAPACITY_ID = -1);
+
+INSERT INTO BL_3NF.CE_PRODUCTS_SCD (PRODUCT_ID, PRODUCT_SRC_ID, PRODUCT_NAME, SUBCATEGORY_ID, MODEL_YEAR, COLOR_ID, STORAGE_CAPACITY_ID, WARRANTY_PERIOD, START_DT, END_DT, IS_ACTIVE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 0, -1, -1, 'n. a.', '1900-01-01', '9999-12-31', 'Y', 'MANUAL', 'MANUAL', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_PRODUCTS_SCD WHERE PRODUCT_ID = -1);
+
+-- CUSTOMERS
+INSERT INTO BL_3NF.CE_SEGMENTS (SEGMENT_ID, SEGMENT_SRC_ID, SEGMENT_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_SEGMENTS WHERE SEGMENT_ID = -1);
+
+INSERT INTO BL_3NF.CE_CUSTOMERS (CUSTOMER_ID, CUSTOMER_SRC_ID, LOYALTY_CARD_NO, FIRST_NAME, LAST_NAME, EMAIL, PHONE, AGE, GENDER, SEGMENT_ID, ADDRESS_ID, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'n. a.', 'n. a.', 'n. a.', 'n. a.', 'n. a.', 'n. a.', -1, -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_CUSTOMERS WHERE CUSTOMER_ID = -1);
+
+-- EMPLOYEES AND STORES
+INSERT INTO BL_3NF.CE_POSITIONS (POSITION_ID, POSITION_SRC_ID, POSITION_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_POSITIONS WHERE POSITION_ID = -1);
+
+INSERT INTO BL_3NF.CE_EMPLOYEES (EMPLOYEE_ID, EMPLOYEE_SRC_ID, EMPLOYEE_FIRST_NAME, EMPLOYEE_LAST_NAME, POSITION_ID, HIRE_DATE, EMPLOYEE_EMAIL, EMPLOYEE_PHONE, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'n. a.', -1, '1900-01-01', 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_EMPLOYEES WHERE EMPLOYEE_ID = -1);
+
+INSERT INTO BL_3NF.CE_STORE_TYPES (STORE_TYPE_ID, STORE_TYPE_SRC_ID, STORE_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORE_TYPES WHERE STORE_TYPE_ID = -1);
+
+INSERT INTO BL_3NF.CE_STORE_STATUSES (STORE_STATUS_ID, STORE_STATUS_SRC_ID, STORE_STATUS, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORE_STATUSES WHERE STORE_STATUS_ID = -1);
+
+INSERT INTO BL_3NF.CE_STORES (STORE_ID, STORE_SRC_ID, STORE_NAME, STORE_TYPE_ID, STORE_STATUS_ID, STORE_SIZE_SQM, OPENING_YEAR, HAS_GENIUS_BAR, MANAGER_ID, ADDRESS_ID, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, -1, 0, 0, 'Y', -1, -1, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORES WHERE STORE_ID = -1);
+
+-- PROMOTIONS AND PAYMENT METHODS
+INSERT INTO BL_3NF.CE_PROMOTION_TYPES (PROMOTION_TYPE_ID, PROMOTION_TYPE_SRC_ID, PROMOTION_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_PROMOTION_TYPES WHERE PROMOTION_TYPE_ID = -1);
+
+INSERT INTO BL_3NF.CE_PROMOTIONS (PROMOTION_ID, PROMOTION_SRC_ID, PROMOTION_NAME, PROMOTION_TYPE_ID, IS_ACTIVE, PROMO_START_DATE, PROMO_END_DATE, DISCOUNT_VALUE, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', -1, 'n. a.', '1900-01-01', '1900-01-01', 0.00, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_PROMOTIONS WHERE PROMOTION_ID = -1);
+
+INSERT INTO BL_3NF.CE_PAYMENT_METHODS (PAYMENT_METHOD_ID, PAYMENT_METHOD_SRC_ID, PAYMENT_METHOD_NAME, PAYMENT_METHOD_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', 'n. a.', 'n. a.', 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_PAYMENT_METHODS WHERE PAYMENT_METHOD_ID = -1);
+
+-- DATES
+INSERT INTO BL_3NF.CE_DATES (DATE_ID, DATE_SRC_ID, FULL_DATE, DAY_OF_WEEK, DAY_NUMBER, MONTH_NUMBER, MONTH_NAME, QUARTER, YEAR, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT -1, 'n. a.', '1900-01-01', 'n. a.', 0, 0, 'n. a.', 0, 0, 'MANUAL', 'MANUAL', '1900-01-01', '1900-01-01'
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_DATES WHERE DATE_ID = -1);
+COMMIT;
+
+
+-- Fill in tables. 
+--GEOGRAPHY
+BEGIN;
+WITH all_data AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(global_region, 'n. a.'))) AS REGION_SRC_ID,
+        TRIM(COALESCE(global_region, 'n. a.')) AS REGION_NAME,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION 
+    SELECT 
+        UPPER(TRIM(COALESCE(region, 'n. a.'))) AS REGION_SRC_ID,
+        TRIM(COALESCE(region, 'n. a.')) AS REGION_NAME,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_REGIONS (REGION_ID, REGION_SRC_ID, REGION_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_REGIONS'),
+    src.REGION_SRC_ID,
+    src.REGION_NAME,
+    src.SOURCE_SYSTEM,
+    src.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (
+    SELECT DISTINCT ON (REGION_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM all_data
+) src
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_REGIONS t 
+    WHERE UPPER(t.REGION_SRC_ID) = src.REGION_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = src.SOURCE_ENTITY
+);
+COMMIT;
+
+
+BEGIN;
+WITH all_sources AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) AS COUNTRY_SRC_ID,
+        TRIM(COALESCE(country, 'n. a.')) AS COUNTRY_NAME,
+        UPPER(TRIM(COALESCE(global_region, 'n. a.'))) AS REG_KEY,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION 
+    SELECT 
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) AS COUNTRY_SRC_ID,
+        TRIM(COALESCE(country, 'n. a.')) AS COUNTRY_NAME,
+        UPPER(TRIM(COALESCE(region, 'n. a.'))) AS REG_KEY,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_COUNTRIES (COUNTRY_ID, COUNTRY_SRC_ID, COUNTRY_NAME, REGION_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_COUNTRIES'),
+    src.COUNTRY_SRC_ID,
+    src.COUNTRY_NAME,
+    COALESCE(r.REGION_ID, -1), 
+    src.SOURCE_SYSTEM,
+    src.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (COUNTRY_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM all_sources) src
+LEFT JOIN BL_3NF.CE_REGIONS r 
+    ON UPPER(r.REGION_SRC_ID) = src.REG_KEY
+   AND UPPER(r.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+   AND UPPER(r.SOURCE_ENTITY) = src.SOURCE_ENTITY
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_COUNTRIES t 
+    WHERE UPPER(t.COUNTRY_SRC_ID) = src.COUNTRY_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = src.SOURCE_ENTITY
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_states AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(state, 'n. a.'))) AS STATE_SRC_ID,
+        TRIM(COALESCE(state, 'n. a.')) AS STATE_NAME,
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) AS JOIN_COUNTRY_KEY,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION 
+    SELECT DISTINCT
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) || '_STATE' AS STATE_SRC_ID,
+        'n. a.' AS STATE_NAME,
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) AS JOIN_COUNTRY_KEY,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_STATES (STATE_ID, STATE_SRC_ID, STATE_NAME, COUNTRY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_STATES'),
+    ds.STATE_SRC_ID,
+    ds.STATE_NAME,
+    COALESCE(c.COUNTRY_ID, -1), 
+    ds.SOURCE_SYSTEM,
+    ds.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (STATE_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM raw_states) ds
+LEFT JOIN BL_3NF.CE_COUNTRIES c 
+    ON UPPER(c.COUNTRY_SRC_ID) = ds.JOIN_COUNTRY_KEY
+   AND UPPER(c.SOURCE_SYSTEM) = ds.SOURCE_SYSTEM
+   AND UPPER(c.SOURCE_ENTITY) = ds.SOURCE_ENTITY
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_STATES t 
+    WHERE UPPER(t.STATE_SRC_ID) = ds.STATE_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = ds.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = ds.SOURCE_ENTITY
+);
+COMMIT;
+
+
+BEGIN;
+WITH all_cities AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(city, 'n. a.'))) AS CITY_SRC_ID,
+        TRIM(COALESCE(city, 'n. a.')) AS CITY_NAME,
+        UPPER(TRIM(COALESCE(state, 'n. a.'))) AS JOIN_STATE_KEY,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION
+    SELECT 
+        UPPER(TRIM(COALESCE(city, 'n. a.'))) AS CITY_SRC_ID,
+        TRIM(COALESCE(city, 'n. a.')) AS CITY_NAME,
+        UPPER(TRIM(COALESCE(country, 'n. a.'))) || '_STATE' AS JOIN_STATE_KEY,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_CITIES (CITY_ID, CITY_SRC_ID, CITY_NAME, REGION_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_CITIES'),
+    src.CITY_SRC_ID,
+    src.CITY_NAME,
+    COALESCE(s.STATE_ID, -1), 
+    src.SOURCE_SYSTEM,
+    src.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (CITY_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM all_cities) src
+LEFT JOIN BL_3NF.CE_STATES s 
+    ON UPPER(s.STATE_SRC_ID) = src.JOIN_STATE_KEY
+   AND UPPER(s.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+   AND UPPER(s.SOURCE_ENTITY) = src.SOURCE_ENTITY
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_CITIES t 
+    WHERE UPPER(t.CITY_SRC_ID) = src.CITY_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = src.SOURCE_ENTITY
+);
+COMMIT;
+
+
+BEGIN;
+WITH all_districts AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(district, 'n. a.'))) AS DISTRICT_SRC_ID,
+        TRIM(COALESCE(district, 'n. a.')) AS DISTRICT_NAME,
+        UPPER(TRIM(COALESCE(city, 'n. a.'))) AS JOIN_CITY_KEY,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION
+    SELECT 
+        UPPER(TRIM(COALESCE(district, 'n. a.'))) AS DISTRICT_SRC_ID,
+        TRIM(COALESCE(district, 'n. a.')) AS DISTRICT_NAME,
+        UPPER(TRIM(COALESCE(city, 'n. a.'))) AS JOIN_CITY_KEY,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_DISTRICTS (DISTRICT_ID, DISTRICT_SRC_ID, DISTRICT_NAME, CITY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_DISTRICTS'),
+    src.DISTRICT_SRC_ID,
+    src.DISTRICT_NAME,
+    COALESCE(c.CITY_ID, -1),
+    src.SOURCE_SYSTEM,
+    src.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (DISTRICT_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM all_districts) src
+LEFT JOIN BL_3NF.CE_CITIES c 
+    ON UPPER(c.CITY_SRC_ID) = src.JOIN_CITY_KEY
+   AND UPPER(c.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+   AND UPPER(c.SOURCE_ENTITY) = src.SOURCE_ENTITY
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_DISTRICTS t 
+    WHERE UPPER(t.DISTRICT_SRC_ID) = src.DISTRICT_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = src.SOURCE_ENTITY
+);
+COMMIT;
+
+
+BEGIN;
+WITH all_addresses AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(address_id, 'n. a.'))) AS ADDRESS_SRC_ID,
+        COALESCE(TRIM(postal_code), 'n. a.') AS POSTAL_CODE,
+        COALESCE(TRIM(address), 'n. a.') AS ADDRESS_NAME,
+        UPPER(TRIM(COALESCE(district, 'n. a.'))) AS JOIN_DISTRICT_KEY,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM,
+        'SRC_APPLE_POS' AS SOURCE_ENTITY
+    FROM sa_apple_pos.src_apple_pos
+    UNION
+    SELECT 
+        UPPER(TRIM(COALESCE(address_id, 'n. a.'))) AS ADDRESS_SRC_ID,
+        COALESCE(TRIM(postal_code), 'n. a.') AS POSTAL_CODE,
+        COALESCE(TRIM(address), 'n. a.') AS ADDRESS_NAME,
+        UPPER(TRIM(COALESCE(district, 'n. a.'))) AS JOIN_DISTRICT_KEY,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM,
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_ADDRESSES (ADDRESS_ID, ADDRESS_SRC_ID, DISTRICT_ID, POSTAL_CODE, ADDRESS, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_ADDRESSES'),
+    src.ADDRESS_SRC_ID,
+    COALESCE(d.DISTRICT_ID, -1),
+    src.POSTAL_CODE,
+    src.ADDRESS_NAME,
+    src.SOURCE_SYSTEM,
+    src.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (ADDRESS_SRC_ID, SOURCE_SYSTEM, SOURCE_ENTITY) * FROM all_addresses) src
+LEFT JOIN BL_3NF.CE_DISTRICTS d 
+    ON UPPER(TRIM(d.DISTRICT_SRC_ID)) = src.JOIN_DISTRICT_KEY
+   AND UPPER(TRIM(d.SOURCE_SYSTEM)) = src.SOURCE_SYSTEM
+   AND UPPER(TRIM(d.SOURCE_ENTITY)) = src.SOURCE_ENTITY
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_ADDRESSES t 
+    WHERE UPPER(t.ADDRESS_SRC_ID) = src.ADDRESS_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+      AND UPPER(t.SOURCE_ENTITY) = src.SOURCE_ENTITY
+);
+COMMIT;
+
+
+-- PRODUCTS
+BEGIN;
+WITH raw_categories AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(category_id, 'n. a.'))) AS src_id, 
+        COALESCE(TRIM(category_name), 'n. a.') AS name, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+    UNION
+    SELECT 
+        UPPER(TRIM(COALESCE(category_id, 'n. a.'))) AS src_id, 
+        COALESCE(TRIM(category_name), 'n. a.') AS name, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_CATEGORIES (CATEGORY_ID, CATEGORY_SRC_ID, CATEGORY_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_CATEGORIES'), 
+    src.src_id, 
+    src.name, 
+    src.sys, 
+    src.ent, 
+    NOW(), 
+    NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_categories) src
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_CATEGORIES t 
+    WHERE UPPER(t.CATEGORY_SRC_ID) = src.src_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+	
+
+BEGIN;
+WITH raw_subcats AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(sub_category_name, 'n. a.'))) AS src_id,
+        COALESCE(TRIM(sub_category_name), 'n. a.') AS name, 
+        UPPER(TRIM(COALESCE(category_id, 'n. a.'))) AS cat_key, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+    UNION
+    SELECT 
+        UPPER(TRIM(COALESCE(sub_category_name, 'n. a.'))) AS src_id,
+        COALESCE(TRIM(sub_category_name), 'n. a.') AS name, 
+        UPPER(TRIM(COALESCE(category_id, 'n. a.'))) AS cat_key, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_SUBCATEGORIES (SUBCATEGORY_ID, SUBCATEGORY_SRC_ID, SUBCATEGORY_NAME, CATEGORY_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_SUBCATEGORIES'), 
+    src.src_id, 
+    src.name, 
+    COALESCE(c.CATEGORY_ID, -1), 
+    src.sys, 
+    src.ent, 
+    NOW(), 
+    NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_subcats) src
+LEFT JOIN BL_3NF.CE_CATEGORIES c 
+    ON UPPER(c.CATEGORY_SRC_ID) = src.cat_key
+   AND UPPER(c.SOURCE_SYSTEM) = src.sys
+   AND UPPER(c.SOURCE_ENTITY) = src.ent
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_SUBCATEGORIES t 
+    WHERE UPPER(t.SUBCATEGORY_SRC_ID) = src.src_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_colors AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(color, 'n. a.'))) AS src_id,
+    	COALESCE(TRIM(color), 'n. a.') AS name, 
+    	'SA_APPLE_POS' AS sys, 
+    	'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+    UNION ALL
+    SELECT 
+    	UPPER(TRIM(COALESCE(color, 'n. a.'))) AS src_id,
+    	COALESCE(TRIM(color), 'n. a.') AS name, 
+    	'SA_APPLE_ONLINE' AS sys, 
+    	'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_COLORS (COLOR_ID, COLOR_SRC_ID, COLOR_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_COLORS'),
+    src.src_id, 
+    src.name, 
+    src.sys, 
+    src.ent, 
+    NOW(), NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_colors) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_COLORS t 
+	WHERE UPPER(t.COLOR_SRC_ID) = src.src_id
+	AND UPPER(t.SOURCE_SYSTEM) = src.sys
+	AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_storage AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(storage_capacity, 'n. a.'))) AS src_id,
+    	COALESCE(TRIM(storage_capacity), 'n. a.') AS name, 
+    	'SA_APPLE_POS' AS sys, 
+    	'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+    UNION ALL
+    SELECT
+    	UPPER(TRIM(COALESCE(storage_capacity, 'n. a.'))) AS src_id, 
+    	COALESCE(TRIM(storage_capacity), 'n. a.') AS name, 
+    	'SA_APPLE_ONLINE' AS sys, 
+    	'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_STORAGE_CAPACITIES (STORAGE_CAPACITY_ID, STORAGE_CAPACITY_SRC_ID, STORAGE_CAPACITY, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_STORAGE_CAPACITIES'), 
+    src.src_id, 
+    src.name, 
+    src.sys, 
+    src.ent, 
+    NOW(), NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_storage) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORAGE_CAPACITIES t 
+	WHERE UPPER(t.STORAGE_CAPACITY_SRC_ID) = src.src_id 
+	AND UPPER(t.SOURCE_SYSTEM) = src.sys
+	AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_prods AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(product_id, 'n. a.'))) AS p_id, 
+    	COALESCE(TRIM(product_name), 'n. a.') AS name, 
+    	UPPER(TRIM(COALESCE(sub_category_name, 'n. a.'))) AS sub_k, 
+    	COALESCE(model_year, '0') AS m_y, 
+        UPPER(TRIM(COALESCE(color, 'n. a.'))) AS col_k, 
+        UPPER(TRIM(COALESCE(storage_capacity, 'n. a.'))) AS cap_k, 
+        COALESCE(TRIM(warranty_period), 'n. a.') AS war, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+    UNION ALL
+    SELECT 
+    	UPPER(TRIM(COALESCE(sku_id, 'n. a.'))) AS p_id, 
+    	COALESCE(TRIM(product_name), 'n. a.') AS name, 
+    	UPPER(TRIM(COALESCE(sub_category_name, 'n. a.'))) AS sub_k, 
+    	COALESCE(model_year, '0') AS m_y, 
+        UPPER(TRIM(COALESCE(color, 'n. a.'))) AS col_k, 
+        UPPER(TRIM(COALESCE(storage_capacity, 'n. a.'))) AS cap_k, 
+        COALESCE(TRIM(warranty_period), 'n. a.') AS war, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_PRODUCTS_SCD (
+    PRODUCT_ID, PRODUCT_SRC_ID, PRODUCT_NAME, SUBCATEGORY_ID, MODEL_YEAR, 
+    COLOR_ID, STORAGE_CAPACITY_ID, WARRANTY_PERIOD, START_DT, END_DT, IS_ACTIVE, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT
+)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_PRODUCTS'), src.p_id, src.name, COALESCE(sc.SUBCATEGORY_ID, -1), 
+    COALESCE(src.m_y::INT, 0), COALESCE(cl.COLOR_ID, -1), COALESCE(st.STORAGE_CAPACITY_ID, -1),
+    COALESCE(src.war, 'n. a.'), CURRENT_DATE, '9999-12-31', 'Y', src.sys, src.ent, NOW()
+FROM (SELECT DISTINCT ON (p_id, sys, ent) * FROM raw_prods) src
+LEFT JOIN BL_3NF.CE_SUBCATEGORIES sc ON UPPER(sc.SUBCATEGORY_SRC_ID) = src.sub_k 
+	AND UPPER(sc.SOURCE_SYSTEM) = src.sys
+	AND UPPER(sc.SOURCE_ENTITY) = src.ent
+LEFT JOIN BL_3NF.CE_COLORS cl ON UPPER(cl.COLOR_SRC_ID) = src.col_k 
+	AND UPPER(cl.SOURCE_SYSTEM) = src.sys
+	AND UPPER(cl.SOURCE_ENTITY) = src.ent
+LEFT JOIN BL_3NF.CE_STORAGE_CAPACITIES st ON UPPER(st.STORAGE_CAPACITY_SRC_ID) = src.cap_k 
+	AND UPPER(st.SOURCE_SYSTEM) = src.sys
+	AND UPPER(st.SOURCE_ENTITY) = src.ent
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_PRODUCTS_SCD t 
+    WHERE UPPER(t.PRODUCT_SRC_ID) = src.p_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys 
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+-- CUSTOMERS
+BEGIN;
+WITH raw_segments AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(segment, 'n. a.'))) AS SEGMENT_SRC_ID,
+        TRIM(COALESCE(segment, 'n. a.')) AS SEGMENT_NAME, 
+    	'SA_APPLE_ONLINE' AS sys, 
+    	'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online
+    UNION ALL
+    SELECT 
+    	'n. a.' AS SEGMENT_SRC_ID, 
+        'n. a.' AS SEGMENT_NAME, 
+    	'SA_APPLE_POS' AS sys, 
+    	'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+)
+INSERT INTO BL_3NF.CE_SEGMENTS (SEGMENT_ID, SEGMENT_SRC_ID, SEGMENT_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+   nextval('BL_3NF.SEQ_CE_SEGMENTS'), src.SEGMENT_SRC_ID, src.SEGMENT_NAME, src.sys, src.ent, NOW(), NOW()
+FROM (SELECT DISTINCT ON (SEGMENT_SRC_ID, sys, ent) * FROM raw_segments) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_SEGMENTS t 
+      WHERE UPPER(t.SEGMENT_SRC_ID) = src.SEGMENT_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH unique_ids AS (
+    SELECT 
+        UPPER(TRIM(loyalty_card_no)) AS src_id, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent, 
+        'POS' AS origin
+    FROM sa_apple_pos.src_apple_pos
+    WHERE loyalty_card_no IS NOT NULL
+    GROUP BY 1
+    UNION ALL
+    SELECT 
+        UPPER(TRIM(customer_id)) AS src_id, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent, 
+        'ONLINE' AS origin
+    FROM sa_apple_online.src_apple_online
+    WHERE customer_id IS NOT NULL
+    GROUP BY 1
+),
+final_data AS (
+    SELECT DISTINCT ON (ui.src_id, ui.sys, ui.ent)
+        ui.src_id AS CUSTOMER_SRC_ID,
+        CASE WHEN ui.origin = 'POS' THEN ui.src_id ELSE 'n. a.' END AS LOYALTY_CARD_NO,
+        COALESCE(TRIM(o.first_name), 'n. a.') AS FIRST_NAME,
+        COALESCE(TRIM(o.last_name), 'n. a.') AS LAST_NAME,
+        COALESCE(TRIM(o.email), 'n. a.') AS EMAIL,
+        COALESCE(TRIM(o.phone), 'n. a.') AS PHONE,
+        COALESCE(TRIM(o.age), 'n. a.') AS AGE,
+        COALESCE(TRIM(o.gender), 'n. a.') AS GENDER,
+        UPPER(TRIM(COALESCE(o.segment, 'n. a.'))) AS segment_key,
+        UPPER(TRIM(COALESCE(o.address_id, p.address_id, 'n. a.'))) AS addr_key,
+        ui.sys AS SOURCE_SYSTEM,
+        ui.ent AS SOURCE_ENTITY
+    FROM unique_ids ui
+    LEFT JOIN sa_apple_online.src_apple_online o 
+        ON UPPER(TRIM(o.customer_id)) = ui.src_id AND ui.origin = 'ONLINE'
+    LEFT JOIN sa_apple_pos.src_apple_pos p 
+        ON UPPER(TRIM(p.loyalty_card_no)) = ui.src_id AND ui.origin = 'POS'
+)
+INSERT INTO BL_3NF.CE_CUSTOMERS (
+    CUSTOMER_ID, CUSTOMER_SRC_ID, LOYALTY_CARD_NO, FIRST_NAME, LAST_NAME, 
+    EMAIL, PHONE, AGE, GENDER, SEGMENT_ID, ADDRESS_ID, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT
+)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_CUSTOMERS'),
+    fd.CUSTOMER_SRC_ID,
+    fd.LOYALTY_CARD_NO,
+    fd.FIRST_NAME,
+    fd.LAST_NAME,
+    fd.EMAIL,
+    fd.PHONE,
+    fd.AGE,
+    fd.GENDER,
+    COALESCE(s.SEGMENT_ID, -1),
+    COALESCE(adr.ADDRESS_ID, -1),
+    fd.SOURCE_SYSTEM,
+    fd.SOURCE_ENTITY,
+    NOW(),
+    NOW()
+FROM final_data fd
+LEFT JOIN BL_3NF.CE_SEGMENTS s ON UPPER(s.SEGMENT_SRC_ID) = fd.segment_key 
+    AND UPPER(s.SOURCE_SYSTEM) = fd.SOURCE_SYSTEM
+    AND UPPER(s.SOURCE_ENTITY) = fd.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_ADDRESSES adr ON UPPER(adr.ADDRESS_SRC_ID) = fd.addr_key
+    AND UPPER(adr.SOURCE_SYSTEM) = fd.SOURCE_SYSTEM
+    AND UPPER(adr.SOURCE_ENTITY) = fd.SOURCE_ENTITY
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_CUSTOMERS t 
+    WHERE UPPER(t.CUSTOMER_SRC_ID) = fd.CUSTOMER_SRC_ID
+    AND UPPER(t.SOURCE_SYSTEM) = fd.SOURCE_SYSTEM
+    AND UPPER(t.SOURCE_ENTITY) = fd.SOURCE_ENTITY
+);
+COMMIT;
+
+
+-- EMPLOYEES AND STORES
+BEGIN;
+WITH raw_positions AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(position, 'n. a.'))) AS src_id,
+        COALESCE(TRIM(position), 'n. a.') AS name, 
+    	'SA_APPLE_POS' AS sys, 
+    	'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+)
+INSERT INTO BL_3NF.CE_POSITIONS (POSITION_ID, POSITION_SRC_ID, POSITION_NAME, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT nextval('BL_3NF.SEQ_CE_POSITIONS'), src.src_id, src.name, src.sys, src.ent, NOW(), NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_positions) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_POSITIONS t 
+    WHERE UPPER(t.POSITION_SRC_ID) = src.src_id
+    AND UPPER(t.SOURCE_SYSTEM) = src.sys
+    AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+BEGIN;
+WITH raw_employees AS (
+    SELECT 
+    	UPPER(TRIM(COALESCE(employee_id, 'n. a.'))) AS src_id, 
+        COALESCE(TRIM(employee_first_name), 'n. a.') AS first_n, 
+        COALESCE(TRIM(employee_last_name), 'n. a.') AS last_n, 
+        UPPER(TRIM(COALESCE(position, 'n. a.'))) AS pos_key, 
+        COALESCE(hire_date, '1900-01-01') AS h_date, 
+        COALESCE(TRIM(employee_email), 'n. a.') AS email, 
+        COALESCE(TRIM(employee_phone), 'n. a.') AS phone,
+        'SA_APPLE_POS' AS sys, 'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+)
+INSERT INTO BL_3NF.CE_EMPLOYEES (EMPLOYEE_ID, EMPLOYEE_SRC_ID, EMPLOYEE_FIRST_NAME, EMPLOYEE_LAST_NAME, 
+POSITION_ID, HIRE_DATE, EMPLOYEE_EMAIL, EMPLOYEE_PHONE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_EMPLOYEES'), src.src_id, src.first_n, src.last_n, 
+    COALESCE(p.POSITION_ID, -1), src.h_date::DATE, src.email, src.phone,
+    src.sys, src.ent, NOW(), NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_employees) src
+LEFT JOIN BL_3NF.CE_POSITIONS p ON UPPER(p.POSITION_SRC_ID) = src.pos_key
+   AND UPPER(p.SOURCE_SYSTEM) = src.sys
+   AND UPPER(p.SOURCE_ENTITY) = src.ent
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_EMPLOYEES t 
+    WHERE UPPER(t.EMPLOYEE_SRC_ID) = src.src_id
+    AND UPPER(t.SOURCE_SYSTEM) = src.sys
+    AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+INSERT INTO BL_3NF.CE_STORE_TYPES (STORE_TYPE_ID, STORE_TYPE_SRC_ID, STORE_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_STORE_TYPES'), 
+    UPPER(TRIM(COALESCE(store_type, 'n. a.'))),  
+    COALESCE(TRIM(store_type), 'n. a.'), 
+    'SA_APPLE_POS', 
+    'SRC_APPLE_POS', 
+    NOW(), NOW()
+FROM (SELECT DISTINCT store_type FROM sa_apple_pos.src_apple_pos) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORE_TYPES t 
+    WHERE UPPER(t.STORE_TYPE_SRC_ID) = src.store_type
+    AND UPPER(t.SOURCE_SYSTEM) = 'SA_APPLE_POS'
+    AND UPPER(t.SOURCE_ENTITY) = 'SRC_APPLE_POS'
+);
+COMMIT;
+
+
+BEGIN;
+INSERT INTO BL_3NF.CE_STORE_STATUSES (STORE_STATUS_ID, STORE_STATUS_SRC_ID, STORE_STATUS, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_STORE_STATUSES'), 
+    UPPER(TRIM(COALESCE(store_status, 'n. a.'))), 
+    COALESCE(TRIM(store_status), 'n. a.'), 
+    'SA_APPLE_POS', 
+    'SRC_APPLE_POS', 
+    NOW(), NOW()
+FROM (SELECT DISTINCT store_status FROM sa_apple_pos.src_apple_pos) src
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_STORE_STATUSES t 
+    WHERE UPPER(t.STORE_STATUS_SRC_ID) = src.store_status
+    AND UPPER(t.SOURCE_SYSTEM) = 'SA_APPLE_POS'
+    AND UPPER(t.SOURCE_ENTITY) = 'SRC_APPLE_POS'
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_stores AS (
+    SELECT 
+        UPPER(COALESCE(store_id, 'n. a.')) AS src_id, 
+        COALESCE(TRIM(store_name), 'n. a.') AS name, 
+        UPPER(TRIM(COALESCE(store_type, 'n. a.'))) AS type_key, 
+        UPPER(TRIM(COALESCE(store_status, 'n. a.'))) AS status_key, 
+        COALESCE(store_size_sqm, '0') AS size_sqm, 
+        COALESCE(opening_year, '0') AS op_year, 
+        COALESCE(has_genius_bar, 'false') AS genius, 
+        UPPER(COALESCE(manager_id, 'n. a.')) AS mgr_key, 
+        UPPER(COALESCE(address_id, 'n. a.')) AS addr_key,
+        'SA_APPLE_POS' AS sys, 'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos
+)
+INSERT INTO BL_3NF.CE_STORES (STORE_ID, STORE_SRC_ID, STORE_NAME, STORE_TYPE_ID, STORE_STATUS_ID, STORE_SIZE_SQM, OPENING_YEAR, HAS_GENIUS_BAR, MANAGER_ID, ADDRESS_ID, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_STORES'), src.src_id, src.name, 
+    COALESCE(tp.STORE_TYPE_ID, -1), 
+    COALESCE(st.STORE_STATUS_ID, -1),
+    COALESCE(src.size_sqm::INT, 0), 
+    COALESCE(src.op_year::INT, 0), 
+    CASE WHEN UPPER(src.genius) = 'TRUE' THEN TRUE ELSE FALSE END,
+    COALESCE(e.EMPLOYEE_ID, -1), 
+    COALESCE(a.ADDRESS_ID, -1),
+    src.sys, src.ent, NOW(), NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_stores) src
+LEFT JOIN BL_3NF.CE_STORE_TYPES tp ON UPPER(tp.STORE_TYPE_SRC_ID) = src.type_key 
+	AND UPPER(tp.SOURCE_SYSTEM) = src.sys
+LEFT JOIN BL_3NF.CE_STORE_STATUSES st ON UPPER(st.STORE_STATUS_SRC_ID) = src.status_key 
+	AND UPPER(st.SOURCE_SYSTEM) = src.sys
+LEFT JOIN BL_3NF.CE_EMPLOYEES e ON UPPER(e.EMPLOYEE_SRC_ID) = src.mgr_key 
+	AND UPPER(e.SOURCE_SYSTEM) = src.sys
+LEFT JOIN BL_3NF.CE_ADDRESSES a ON UPPER(a.ADDRESS_SRC_ID) = src.addr_key 
+	AND UPPER(a.SOURCE_SYSTEM) = src.sys
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_STORES t 
+    WHERE UPPER(t.STORE_SRC_ID) = src.src_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+-- PROMOTIONS AND PAYMENT METHODS
+BEGIN;
+WITH raw_promo_types AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(promotion_type, 'n. a.'))) AS PROMOTION_TYPE_SRC_ID,
+        COALESCE(TRIM(promotion_type), 'n. a.') AS name, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos 
+    UNION ALL
+    SELECT 
+        UPPER(TRIM(COALESCE(promotion_type, 'n. a.'))) AS PROMOTION_TYPE_SRC_ID,
+        COALESCE(TRIM(promotion_type), 'n. a.') AS name, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online 
+)
+INSERT INTO BL_3NF.CE_PROMOTION_TYPES (PROMOTION_TYPE_ID, PROMOTION_TYPE_SRC_ID, PROMOTION_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_PROMOTION_TYPES'), 
+    src.PROMOTION_TYPE_SRC_ID, 
+    src.name, 
+    src.sys, 
+    src.ent, 
+    NOW(), 
+    NOW()
+FROM (SELECT DISTINCT ON (PROMOTION_TYPE_SRC_ID, sys, ent) * FROM raw_promo_types) src
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_PROMOTION_TYPES t 
+    WHERE UPPER(t.PROMOTION_TYPE_SRC_ID) = src.PROMOTION_TYPE_SRC_ID
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_promos AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(promotion_id, 'n. a.'))) AS src_id, 
+        COALESCE(TRIM(promotion_name), 'n. a.') AS name, 
+        UPPER(TRIM(COALESCE(promotion_type, 'n. a.'))) AS p_type_key, 
+        COALESCE(is_active, 'n. a.') AS active_flg, 
+        COALESCE(promo_start_date, '1900-01-01') AS s_dt, 
+        COALESCE(promo_end_date, '9999-12-31') AS e_dt, 
+        COALESCE(discount_value, '0.00') AS disc, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos 
+    UNION ALL
+    SELECT 
+        UPPER(TRIM(COALESCE(promotion_id, 'n. a.'))) AS src_id, 
+        COALESCE(TRIM(promotion_name), 'n. a.') AS name, 
+        UPPER(TRIM(COALESCE(promotion_type, 'n. a.'))) AS p_type_key, 
+        COALESCE(is_active, 'n. a.') AS active_flg, 
+        COALESCE(promo_start_date, '1900-01-01') AS s_dt, 
+        COALESCE(promo_end_date, '9999-12-31') AS e_dt, 
+        COALESCE(discount_value, '0.00') AS disc, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online 
+)
+INSERT INTO BL_3NF.CE_PROMOTIONS (PROMOTION_ID, PROMOTION_SRC_ID, PROMOTION_NAME, PROMOTION_TYPE_ID, 
+IS_ACTIVE, PROMO_START_DATE, PROMO_END_DATE, DISCOUNT_VALUE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_PROMOTIONS'),
+    src.src_id,
+    src.name,
+    COALESCE(pt.PROMOTION_TYPE_ID, -1),
+    src.active_flg,
+    src.s_dt::DATE,
+    src.e_dt::DATE,
+    src.disc::DECIMAL(10,2),
+    src.sys,
+    src.ent,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_promos) src
+LEFT JOIN BL_3NF.CE_PROMOTION_TYPES pt ON UPPER(pt.PROMOTION_TYPE_SRC_ID) = src.p_type_key
+   AND UPPER(pt.SOURCE_SYSTEM) = src.sys
+   AND UPPER(pt.SOURCE_ENTITY) = src.ent
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_PROMOTIONS t 
+    WHERE UPPER(t.PROMOTION_SRC_ID) = src.src_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+BEGIN;
+WITH raw_payments AS (
+    SELECT 
+        UPPER(TRIM(COALESCE(payment_method_name, 'n. a.'))) AS src_id,
+        COALESCE(TRIM(payment_method_name), 'n. a.') AS name, 
+        COALESCE(TRIM(payment_type), 'n. a.') AS p_type, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent 
+    FROM sa_apple_pos.src_apple_pos 
+    UNION ALL
+    SELECT 
+        UPPER(TRIM(COALESCE(payment_method_name, 'n. a.'))) AS src_id,
+        COALESCE(TRIM(payment_method_name), 'n. a.') AS name, 
+        COALESCE(TRIM(payment_type), 'n. a.') AS p_type, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent 
+    FROM sa_apple_online.src_apple_online 
+)
+INSERT INTO BL_3NF.CE_PAYMENT_METHODS (PAYMENT_METHOD_ID, PAYMENT_METHOD_SRC_ID, PAYMENT_METHOD_NAME, 
+PAYMENT_METHOD_TYPE, SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_PAYMENT_METHODS'),
+    src.src_id,
+    src.name,
+    src.p_type,
+    src.sys,
+    src.ent,
+    NOW(),
+    NOW()
+FROM (SELECT DISTINCT ON (src_id, sys, ent) * FROM raw_payments) src
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_PAYMENT_METHODS t 
+    WHERE UPPER(t.PAYMENT_METHOD_SRC_ID) = src.src_id
+      AND UPPER(t.SOURCE_SYSTEM) = src.sys
+      AND UPPER(t.SOURCE_ENTITY) = src.ent
+);
+COMMIT;
+
+
+-- DATES
+BEGIN;
+WITH raw_dates AS (
+    SELECT DISTINCT 
+        COALESCE(sale_date::DATE, '1900-01-01'::DATE) AS dt, 
+        'SA_APPLE_POS' AS sys, 
+        'SRC_APPLE_POS' AS ent,
+        1 AS priority
+    FROM sa_apple_pos.src_apple_pos 
+    WHERE sale_date IS NOT NULL
+    UNION ALL
+    SELECT DISTINCT 
+        COALESCE(order_time::DATE, '1900-01-01'::DATE) AS dt, 
+        'SA_APPLE_ONLINE' AS sys, 
+        'SRC_APPLE_ONLINE' AS ent,
+        2 AS priority
+    FROM sa_apple_online.src_apple_online 
+    WHERE order_time IS NOT NULL
+),
+deduplicated_dates AS (
+    SELECT DISTINCT ON (dt) *
+    FROM raw_dates
+    ORDER BY dt, priority
+)
+INSERT INTO BL_3NF.CE_DATES (
+    DATE_ID, DATE_SRC_ID, FULL_DATE, DAY_OF_WEEK, DAY_NUMBER, 
+    MONTH_NUMBER, MONTH_NAME, QUARTER, YEAR, 
+    SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT, UPDATE_DT
+)
+SELECT 
+    TO_CHAR(dt, 'YYYYMMDD')::BIGINT,
+    TO_CHAR(dt, 'YYYY-MM-DD'),
+    dt,
+    TO_CHAR(dt, 'TMDay'),
+    EXTRACT(DAY FROM dt),
+    EXTRACT(MONTH FROM dt),
+    TO_CHAR(dt, 'TMMonth'),
+    EXTRACT(QUARTER FROM dt),
+    EXTRACT(YEAR FROM dt),
+    sys,
+    ent,
+    NOW(),
+    NOW()
+FROM deduplicated_dates dd
+WHERE NOT EXISTS (
+    SELECT 1 FROM BL_3NF.CE_DATES t 
+    WHERE t.DATE_ID = TO_CHAR(dd.dt, 'YYYYMMDD')::BIGINT);
+COMMIT;
+
+
+-- SALES
+BEGIN;
+WITH all_sales AS (
+    SELECT 
+        UPPER(TRIM(sale_id)) AS SALE_SRC_ID, 
+        'POS' AS SALE_CHANNEL, 
+        sale_date::DATE AS S_DATE, 
+        UPPER(TRIM(product_id)) AS PRODUCT_SRC_ID,
+        UPPER(TRIM(loyalty_card_no)) AS CUSTOMER_SRC_ID, 
+        UPPER(TRIM(store_id)) AS STORE_SRC_ID, 
+        UPPER(TRIM(employee_id)) AS EMPLOYEE_SRC_ID, 
+        UPPER(TRIM(promotion_id)) AS PROMOTION_SRC_ID,
+        COALESCE(TRIM(payment_method_name), 'n. a.') AS PAYMENT_METHOD_NAME, 
+        UPPER(TRIM(address_id)) AS ADDRESS_SRC_ID,
+        quantity::INT AS QUANTITY, 
+        unit_price::DECIMAL(18,2) AS UNIT_PRICE, 
+        unit_cost::DECIMAL(18,2) AS UNIT_COST,
+        'SA_APPLE_POS' AS SOURCE_SYSTEM, 
+        'SRC_APPLE_POS' AS SOURCE_ENTITY 
+    FROM sa_apple_pos.src_apple_pos
+    UNION ALL
+    SELECT 
+        UPPER(TRIM(order_code)) AS SALE_SRC_ID, 
+        'ONLINE' AS SALE_CHANNEL, 
+        order_time::DATE AS S_DATE, 
+        UPPER(TRIM(sku_id)) AS PRODUCT_SRC_ID,
+        UPPER(TRIM(customer_id)) AS CUSTOMER_SRC_ID, 
+        '-1' AS STORE_SRC_ID, 
+        '-1' AS EMPLOYEE_SRC_ID, 
+        UPPER(TRIM(promotion_id)) AS PROMOTION_SRC_ID,
+        COALESCE(TRIM(payment_method_name), 'n. a.') AS PAYMENT_METHOD_NAME, 
+        UPPER(TRIM(address_id)) AS ADDRESS_SRC_ID, 
+        qty::INT AS QUANTITY, 
+        list_price::DECIMAL(18,2) AS UNIT_PRICE, 
+        unit_cost::DECIMAL(18,2) AS UNIT_COST,
+        'SA_APPLE_ONLINE' AS SOURCE_SYSTEM, 
+        'SRC_APPLE_ONLINE' AS SOURCE_ENTITY
+    FROM sa_apple_online.src_apple_online
+)
+INSERT INTO BL_3NF.CE_SALES (
+    SALE_ID, SALE_SRC_ID, SALE_CHANNEL, DATE_ID, PRODUCT_ID, CUSTOMER_ID, STORE_ID, 
+    EMPLOYEE_ID, PROMOTION_ID, PAYMENT_METHOD_ID, ADDRESS_ID, QUANTITY, UNIT_PRICE, UNIT_COST, INSERT_DT
+)
+SELECT 
+    nextval('BL_3NF.SEQ_CE_SALES'),
+    src.SALE_SRC_ID,
+    src.SALE_CHANNEL,
+    COALESCE(d.DATE_ID, -1),
+    COALESCE(p.PRODUCT_ID, -1), 
+    COALESCE(c.CUSTOMER_ID, -1),
+    COALESCE(st.STORE_ID, -1),
+    COALESCE(e.EMPLOYEE_ID, -1),
+    COALESCE(pr.PROMOTION_ID, -1),
+    COALESCE(pm.PAYMENT_METHOD_ID, -1),
+    COALESCE(a.ADDRESS_ID, -1),
+    src.QUANTITY, src.UNIT_PRICE, src.UNIT_COST, NOW()
+FROM all_sales src
+LEFT JOIN BL_3NF.CE_DATES d ON d.FULL_DATE = src.S_DATE
+    AND UPPER(d.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(d.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_PRODUCTS_SCD p ON UPPER(p.PRODUCT_SRC_ID) = src.PRODUCT_SRC_ID
+    AND UPPER(p.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(p.SOURCE_ENTITY) = src.SOURCE_ENTITY
+    AND src.S_DATE BETWEEN p.START_DT AND p.END_DT
+LEFT JOIN BL_3NF.CE_CUSTOMERS c ON UPPER(c.CUSTOMER_SRC_ID) = src.CUSTOMER_SRC_ID
+    AND UPPER(c.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(c.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_STORES st ON UPPER(st.STORE_SRC_ID) = src.STORE_SRC_ID
+    AND UPPER(st.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(st.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_EMPLOYEES e ON UPPER(e.EMPLOYEE_SRC_ID) = src.EMPLOYEE_SRC_ID
+    AND UPPER(e.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(e.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_PROMOTIONS pr ON UPPER(pr.PROMOTION_SRC_ID) = src.PROMOTION_SRC_ID
+    AND UPPER(pr.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(pr.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_PAYMENT_METHODS pm ON UPPER(pm.PAYMENT_METHOD_SRC_ID) = src.PAYMENT_METHOD_NAME
+    AND UPPER(pm.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(pm.SOURCE_ENTITY) = src.SOURCE_ENTITY
+LEFT JOIN BL_3NF.CE_ADDRESSES a ON UPPER(a.ADDRESS_SRC_ID) = src.ADDRESS_SRC_ID
+    AND UPPER(a.SOURCE_SYSTEM) = src.SOURCE_SYSTEM
+    AND UPPER(a.SOURCE_ENTITY) = src.SOURCE_ENTITY
+WHERE NOT EXISTS (SELECT 1 FROM BL_3NF.CE_SALES t 
+	WHERE UPPER(t.SALE_SRC_ID) = src.SALE_SRC_ID
+	AND UPPER(t.SALE_CHANNEL) = src.SALE_CHANNEL
+);
+COMMIT;
+
+
+
+
+
+
+
+
