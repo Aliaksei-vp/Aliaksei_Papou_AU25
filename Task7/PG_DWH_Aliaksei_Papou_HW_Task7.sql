@@ -806,9 +806,9 @@ BEGIN
             SOURCE_SYSTEM, SOURCE_ENTITY, INSERT_DT)
         SELECT 
             COALESCE(r.v_current_product_id, nextval('BL_3NF.SEQ_CE_PRODUCTS')), 
-            r.p_src_id, r.p_name, r.v_sub_id, 
-            r.m_y, r.v_col_id, r.v_stg_id,
-            r.war, v_now, '9999-12-31 23:59:59', 'Y', r.s_sys, r.s_ent, NOW()
+            r.p_src_id, r.p_name, r.v_sub_id, r.m_y, r.v_col_id, r.v_stg_id, r.war, 
+            CASE WHEN r.v_current_product_id IS NULL THEN '1900-01-01 00:00:00'::TIMESTAMP ELSE v_now END, 
+            '9999-12-31 23:59:59', 'Y', r.s_sys, r.s_ent, NOW()
         WHERE NOT EXISTS (
             SELECT 1 FROM BL_3NF.CE_PRODUCTS_SCD t 
             WHERE t.PRODUCT_SRC_ID = r.p_src_id 
@@ -818,7 +818,7 @@ BEGIN
         GET DIAGNOSTICS v_cnt = ROW_COUNT;
         v_rows := v_rows + v_cnt;
     END LOOP;
-    CALL BL_CL.PRC_WRITE_LOG(v_proc_name, v_rows, 'SUCCESS', 'SCD Type 2 load finished');
+    CALL BL_CL.PRC_WRITE_LOG(v_proc_name, v_rows, 'SUCCESS', 'SCD Type 2 load finished with historical start date logic');
 EXCEPTION WHEN OTHERS THEN
     CALL BL_CL.PRC_WRITE_LOG(v_proc_name, 0, 'ERROR', SQLERRM);
     RAISE;
