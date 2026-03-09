@@ -1,0 +1,96 @@
+
+--Create a Master procedure to load BL_DM
+CREATE OR REPLACE PROCEDURE BL_CL.PRC_LOAD_DM_DATA_ALL()
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_proc_name CONSTANT TEXT := 'PRC_LOAD_DM_DATA_ALL';
+BEGIN
+    CALL BL_CL.PRC_INIT_DM_DEFAULT_ROWS();
+    CALL BL_CL.PRC_LOAD_DIM_PAYMENT_METHODS();
+    CALL BL_CL.PRC_LOAD_DIM_PROMOTIONS();
+    CALL BL_CL.PRC_LOAD_DIM_EMPLOYEES();
+    CALL BL_CL.PRC_LOAD_DIM_STORES();
+    CALL BL_CL.PRC_LOAD_DIM_CUSTOMERS();
+    CALL BL_CL.PRC_LOAD_DIM_PRODUCTS_SCD();
+    CALL BL_CL.PRC_LOAD_FCT_SALES_DM_ROLLING();
+    CALL BL_CL.PRC_WRITE_LOG(v_proc_name, 1, 'SUCCESS', 'Full DM load layer finished');
+EXCEPTION WHEN OTHERS THEN
+    CALL BL_CL.PRC_WRITE_LOG(v_proc_name, 0, 'ERROR', 'Master failed at: ' || SQLERRM);
+    RAISE;
+END; $$;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
