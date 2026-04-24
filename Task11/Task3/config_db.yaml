@@ -1,0 +1,22 @@
+smoke_tests:
+  - name: Presence of dwh_channels
+    sql: "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'dwh' AND table_name = 'dwh_channels';"
+    expected: 1
+  - name: Presence of dwh_clients
+    sql: "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'dwh' AND table_name = 'dwh_clients';"
+    expected: 1
+  - name: Presence of dwh_sales
+    sql: "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'dwh' AND table_name = 'dwh_sales';"
+    expected: 1
+
+critical_tests:
+  - name: Check dwh_products is not empty
+    sql: "SELECT COUNT(*) > 0 FROM dwh.dwh_products;"
+    expected: True
+  - name: Check dwh_locations has data
+    sql: "SELECT COUNT(*) > 0 FROM dwh.dwh_locations;"
+    expected: True
+  - name: Integrity check - sales records
+    sql: "SELECT count(*) FROM dwh.dwh_sales WHERE client_id IS NOT NULL;"
+    expected: 23696
+
