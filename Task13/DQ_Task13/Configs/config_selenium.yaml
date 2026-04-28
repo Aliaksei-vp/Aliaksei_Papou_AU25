@@ -1,0 +1,4 @@
+global:
+    report_uri: https://playground.powerbi.com/en-us/showcases-gallery
+    delay: 20
+    browser: "chrome"
