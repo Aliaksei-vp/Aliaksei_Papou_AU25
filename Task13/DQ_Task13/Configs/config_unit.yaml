@@ -1,0 +1,10 @@
+cases:
+  - case_name: "Positive integers"
+    input: [3, 5, 2]
+    expected: 10
+  - case_name: "Negative and positive"
+    input: [-1, 5, 0]
+    expected: 4
+  - case_name: "Floats"
+    input: [1.5, 2.5, 1.0]
+    expected: 5.0
