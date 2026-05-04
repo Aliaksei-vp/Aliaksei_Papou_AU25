@@ -2,6 +2,7 @@ import allure
 import pytest
 
 @allure.feature("Data Integrity Tests")
+@pytest.mark.integration
 class TestDataValidation:
 
     @allure.story("Scenario 1: API Data Verification")

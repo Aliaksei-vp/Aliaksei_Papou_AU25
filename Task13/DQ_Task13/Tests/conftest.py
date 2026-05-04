@@ -23,10 +23,11 @@ def track_suite_time():
 # --- fixture DB ---
 @pytest.fixture(scope="session")
 def db_connection():
+    db_pass = os.getenv('DB_PASSWORD')
     conn = psycopg2.connect(
         database="dwh_hw_db",
         user='postgres',
-        password='xh1931',
+        password=db_pass,
         host='localhost',
         port='5432'
     )
@@ -63,6 +64,19 @@ def pbi_page():
 
     page = CaptureReportPage(driver, conf['delay'])
     yield page
+    driver.quit()
+
+
+@pytest.fixture
+def driver():
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+
+    driver = webdriver.Chrome(options=options)
+    driver.maximize_window()
+
+    yield driver
     driver.quit()
 
 # --- fixture Cloud/API ---
